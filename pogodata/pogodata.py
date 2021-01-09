@@ -1,10 +1,9 @@
 import re
-import copy
 
 from .util import httpget
 from .game_objects import make_type_list, make_item_list
 from .moves import make_move_list
-from .mons import make_mon_list
+from .mons import make_mon_list, check_mons
 
 PROTO_URL = "https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/base.proto"
 GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"
@@ -15,7 +14,7 @@ class PogoData:
         self.__cached_enums = {}
         self.reload(language)
 
-    def reload(self, language):
+    def reload(self, language="english"):
         self.raw_protos = httpget(PROTO_URL).text
         self.raw_gamemaster = httpget(GAMEMASTER_URL).json()
 
@@ -29,27 +28,7 @@ class PogoData:
         self.moves = make_move_list(self)
 
         self.mons = make_mon_list(self)[::-1]
-
-        form_enums = self.get_enum("Form")
-        for entry in self.raw_gamemaster:
-            if re.search(r"^FORMS_V\d{4}_POKEMON_.*", entry.get("templateId", "")):
-                formsettings = entry.get("data").get("formSettings")
-                forms = formsettings.get("forms", [])
-                for form in forms:
-                    mon = self.get_mon(template=form.get("form"))
-                    if not mon:
-                        mon = self.get_mon(template=formsettings["pokemon"])
-                        mon = copy.copy(mon)
-                        mon.template = form.get("form")
-                        mon.form = form_enums.get(mon.template)
-                        self.mons.append(mon) 
-
-                    asset_value = form.get("assetBundleValue")
-                    asset_suffix = form.get("assetBundleSuffix")
-                    if asset_value or asset_suffix:
-                        mon.asset_value = asset_value
-                        mon.asset_suffix = asset_suffix
-                        mon._gen_asset()
+        check_mons(self)
 
     def __get_object(self, obj_list, args, match_one=True):
         final = []
@@ -74,6 +53,9 @@ class PogoData:
     
     def get_type(self, **args):
         return self.__get_object(self.types, args)
+
+    def get_item(self, **args):
+        return self.__get_object(self.items, args)
 
     def get_move(self, **args):
         return self.__get_object(self.moves, args)

@@ -1,4 +1,5 @@
 import re
+import copy
 from .game_objects import GameObject, GameMasterObject
 
 class TempEvolution(GameObject):
@@ -86,3 +87,35 @@ def make_mon_list(pogodata):
             mons.append(mon)
 
     return mons
+
+def check_mons(pogoinfo):
+    form_enums = pogoinfo.get_enum("Form")
+    for entry in pogoinfo.raw_gamemaster:
+        if re.search(r"^FORMS_V\d{4}_POKEMON_.*", entry.get("templateId", "")):
+            formsettings = entry.get("data").get("formSettings")
+            forms = formsettings.get("forms", [])
+            for form in forms:
+                mon = pogoinfo.get_mon(template=form.get("form"))
+                if not mon:
+                    mon = pogoinfo.get_mon(template=formsettings["pokemon"])
+                    mon = copy.copy(mon)
+                    mon.template = form.get("form")
+                    mon.form = form_enums.get(mon.template)
+                    pogoinfo.mons.append(mon) 
+
+                asset_value = form.get("assetBundleValue")
+                asset_suffix = form.get("assetBundleSuffix")
+                if asset_value or asset_suffix:
+                    mon.asset_value = asset_value
+                    mon.asset_suffix = asset_suffix
+                    mon._gen_asset()
+
+    for mon in pogoinfo.mons:
+        evolutions = mon.raw.get("evolutionBranch", [])
+        for evo_raw in evolutions:
+            if "temporaryEvolution" in evo_raw:
+                continue
+            evo = pogoinfo.get_mon(
+                template=evo_raw.get("form", evo_raw["evolution"])
+            )
+            mon.evolutions.append(evo)
