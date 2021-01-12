@@ -1,14 +1,14 @@
 from setuptools import setup
 
-version = "1.1.1"
+version = "0.0.1"
 
 setup(
-    name="stscpy",
+    name="pogodata",
     author="ccev",
-    url="https://github.com/ccev/stscpy",
+    url="https://github.com/ccev/pogodata",
     version=version,
-    install_requires=["requests", "Pillow"],
-    packages=["tileserver"],
-    long_description="For documentation, plase visit https://github.com/ccev/stscpy",
-    description="Basic wrapper for SwiftTileserverCache"
+    install_requires=["requests"],
+    packages=["pogodata"],
+    long_description="For documentation, plase visit https://github.com/ccev/pogodata",
+    description="Easy and up-to-date Pogo Data"
 )
