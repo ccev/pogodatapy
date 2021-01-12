@@ -1,6 +1,7 @@
 import re
 import copy
 from .game_objects import GameObject, GameMasterObject
+from .util import gen_uicon
 
 class TempEvolution(GameObject):
     def __init__(self, temp_raw):
@@ -28,12 +29,14 @@ class Mon(GameMasterObject):
         self.temp_evolutions = []
         self.stats = [v for v in self.raw.get("stats", {}).values()]
 
-        self.icon = None
         self.costume = 0
 
         self.asset_value = None
         self.asset_suffix = None
         self._gen_asset()
+
+    def copy(self):
+        return copy.copy(self)
 
     @property
     def moves(self):
@@ -49,6 +52,8 @@ class Mon(GameMasterObject):
                 self.asset += str(self.asset_value)
             else:
                 self.asset += "00"
+                if self.costume:
+                    self.asset += "_" + str(self.costume).zfill(2)
 
 def make_mon_list(pogodata):
     def __typing(mon, type1ref, type2ref):
@@ -98,7 +103,7 @@ def check_mons(pogoinfo):
                 mon = pogoinfo.get_mon(template=form.get("form"))
                 if not mon:
                     mon = pogoinfo.get_mon(template=formsettings["pokemon"])
-                    mon = copy.copy(mon)
+                    mon = mon.copy()
                     mon.template = form.get("form")
                     mon.form = form_enums.get(mon.template)
                     pogoinfo.mons.append(mon) 

@@ -10,15 +10,16 @@ GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/mast
 LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_{lang}.json"
 
 class PogoData:
-    def __init__(self, language="english"):
+    def __init__(self, language="english", icon_url=""):
         self.__cached_enums = {}
+        self.icon_prefix = icon_url
         self.reload(language)
 
     def reload(self, language="english"):
         self.raw_protos = httpget(PROTO_URL).text
         self.raw_gamemaster = httpget(GAMEMASTER_URL).json()
 
-        raw_locale = httpget(LOCALE_URL.format(lang=language)).json()["data"]
+        raw_locale = httpget(LOCALE_URL.format(lang=language.lower())).json()["data"]
         self.locale = {}
         for i in range(0, len(raw_locale), 2):
             self.locale[raw_locale[i]] = raw_locale[i+1]
@@ -27,7 +28,7 @@ class PogoData:
         self.types = make_type_list(self)
         self.moves = make_move_list(self)
 
-        self.mons = make_mon_list(self)[::-1]
+        self.mons = make_mon_list(self)
         check_mons(self)
 
     def __get_object(self, obj_list, args, match_one=True):
@@ -49,7 +50,13 @@ class PogoData:
         return None
 
     def get_mon(self, get_one=True, **args):
-        return self.__get_object(self.mons, args, get_one)
+        mon = self.__get_object(self.mons, args, get_one)
+        if args.get("costume", 0) > 0:
+            mon = mon.copy()
+            mon.costume = args["costume"]
+            mon._gen_asset()
+
+        return mon
     
     def get_type(self, **args):
         return self.__get_object(self.types, args)
@@ -87,5 +94,3 @@ class PogoData:
             final = {value:key for key, value in final.items()}
 
         return final
-    
-    #@property
