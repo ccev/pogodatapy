@@ -4,6 +4,7 @@ from .util import httpget
 from .game_objects import make_type_list, make_item_list
 from .moves import make_move_list
 from .mons import make_mon_list, check_mons
+from .grunt_characters import make_grunt_list
 
 PROTO_URL = "https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/base.proto"
 GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"
@@ -27,6 +28,7 @@ class PogoData:
         self.items = make_item_list(self)
         self.types = make_type_list(self)
         self.moves = make_move_list(self)
+        self.grunts = make_grunt_list(self)
 
         self.mons = make_mon_list(self)
         check_mons(self)
@@ -59,6 +61,9 @@ class PogoData:
         return mon
     
     def get_type(self, **args):
+        if "template" in args:
+            if not args["template"].startswith("POKEMON_TYPE_"):
+                args["template"] = "POKEMON_TYPE_" + args["template"]
         return self.__get_object(self.types, args)
 
     def get_item(self, **args):
@@ -66,6 +71,9 @@ class PogoData:
 
     def get_move(self, **args):
         return self.__get_object(self.moves, args)
+
+    def get_grunt(self, **args):
+        return self.__get_object(self.grunts, args)
 
     def get_locale(self, key):
         return self.locale.get(key.lower(), "?")

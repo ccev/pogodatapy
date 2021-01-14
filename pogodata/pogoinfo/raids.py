@@ -1,8 +1,8 @@
 class RaidIterator:
     def __init__(self, raids):
         self.mons = []
-        for mon in raids.values():
-            self.mons += mon
+        for level, mon in raids.items():
+            self.mons += [(level, m) for m in mon]
         self._index = 0
 
     def __next__(self):
