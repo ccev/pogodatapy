@@ -24,7 +24,7 @@ class PogoData:
 
     Attributes
     ----------
-    mons: List[:class:`.mons.Mon`]
+    mons: List[:class:`.Pokemon`]
         All Pokémon.
     items: List[:class:`.items.Item`]
         All Items.
@@ -162,6 +162,7 @@ class PogoData:
         megas = self.get_enum("HoloTemporaryEvolutionId")
         mon_ids = self.get_enum("HoloPokemonId")
 
+        # Creating a base mon list based on GM entries
         pattern = r"^V\d{4}_POKEMON_"
         for templateid, entry in self.get_gamemaster(pattern+".*", "pokemonSettings"):
             template = re.sub(pattern, "", templateid)
@@ -179,6 +180,7 @@ class PogoData:
 
             self.mons.append(mon)
 
+            # Handling Temp (Mega) Evolutions
             for temp_evo in mon.raw.get("tempEvoOverrides", []):
                 evo = mon.copy()
                 evo.type = POKEMON_TYPES[2]
@@ -196,6 +198,7 @@ class PogoData:
                 self.mons.append(evo)
                 mon.temp_evolutions.append(evo)
 
+        # Going through GM Forms and adding missing Forms (Unown, Spinda) and making in-game assets
         form_enums = self.get_enum("Form")
         for template, formsettings in self.get_gamemaster(r"^FORMS_V\d{4}_POKEMON_.*", "formSettings"):
             forms = formsettings.get("forms", [])
@@ -216,6 +219,7 @@ class PogoData:
                     mon.asset_suffix = asset_suffix
                     mon._gen_asset()
 
+        # Temp Evolution assets
         evo_gm = self.get_gamemaster(
             r"^TEMPORARY_EVOLUTION_V\d{4}_POKEMON_.*",
             "temporaryEvolutionSettings"
@@ -231,6 +235,7 @@ class PogoData:
                 mon.asset_value = temp_evo_raw["assetBundleValue"]
                 mon._gen_asset()
 
+        # Making Pokemon.evolutions attributes
         for mon in self.mons:
             evolutions = mon.raw.get("evolutionBranch", [])
             for evo_raw in evolutions:
