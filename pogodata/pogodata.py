@@ -1,15 +1,11 @@
 import re
 
-from .util import httpget, POKEMON_TYPES
-from .game_objects import make_type_list, make_item_list
-from .moves import make_move_list
+from .util import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL
 from .grunts import make_grunt_list
 
-from .mons import Pokemon
+from .objects import Pokemon, Type, Item, Move
 
-PROTO_URL = "https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/base.proto"
-GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"
-LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_{lang}.json"
+
 
 class PogoData:
     """The class holding all data this module provides
@@ -57,12 +53,28 @@ class PogoData:
         for i in range(0, len(raw_locale), 2):
             self.locale[raw_locale[i]] = raw_locale[i+1]
 
-        self.items = make_item_list(self)
-        self.types = make_type_list(self)
-        self.moves = make_move_list(self)
+        self.items = self.__make_simple_gameobject_list(
+            "Item",
+            "{template}_name",
+            Item
+        )
+        self.types = self.__make_simple_gameobject_list(
+            "HoloPokemonType",
+            "{template}",
+            Type
+        )
+        self.__make_move_list()
         self.grunts = make_grunt_list(self)
 
         self.__make_mon_list()
+
+    def __make_simple_gameobject_list(self, enum, locale_key, obj):
+        objs = []
+        for template, id_ in self.get_enum(enum).items():
+            obj_ = obj(id_, template)
+            obj_.name = self.get_locale(locale_key.format(template=template))
+            objs.append(obj_)
+        return objs
 
     def __get_object(self, obj_list, args, match_one=True):
         final = []
@@ -149,6 +161,18 @@ class PogoData:
         return result
 
     # Build lists
+
+    def __make_move_list(self):
+        self.moves = []
+        move_enum = self.get_enum("HoloPokemonMove")
+        pattern = r"^COMBAT_V\d{4}_MOVE_"
+        for templateid, entry in self.get_gamemaster(pattern+".*", "combatMove"):
+            template = re.sub(pattern, "", templateid)
+            move_id = move_enum.get(template, 0)
+            move = Move(template, entry, move_id)
+            move.type = self.get_type(template=move.raw.get("type"))
+            move.name = self.get_locale("move_name_" + str(move.id).zfill(4))
+            self.moves.append(move)
 
     def __make_mon_list(self):
         def __typing(mon, type1ref, type2ref):

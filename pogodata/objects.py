@@ -1,6 +1,33 @@
 import copy
-from .game_objects import GameMasterObject
 from .util import POKEMON_TYPES
+
+class GameObject:
+    def __init__(self, id_, template):
+        self.id = id_
+        self.template = template
+        self.name = "?"
+    
+    def __str__(self):
+        return self.template
+
+class GameMasterObject(GameObject):
+    def __init__(self, id_, template, gamemaster_entry, settings_name=""):
+        super().__init__(id_, template)
+        if "data" in gamemaster_entry:
+            self.raw = gamemaster_entry.get("data", {}).get(settings_name, {})
+        else:
+            self.raw = gamemaster_entry
+
+class Type(GameObject):
+    pass
+
+class Item(GameObject):
+    pass
+
+class Move(GameMasterObject):
+    def __init__(self, template, gamemaster_entry, move_id):
+        super().__init__(move_id, template, gamemaster_entry)
+        self.type = None
 
 class Pokemon(GameMasterObject):
     def __init__(self, gamemaster_entry, form_id, template, mon_id):

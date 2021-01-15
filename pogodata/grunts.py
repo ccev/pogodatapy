@@ -1,5 +1,5 @@
 import re
-from .game_objects import GameMasterObject
+from .objects import GameMasterObject
 
 class Grunt(GameMasterObject):
     def __init__(self, id_, template, entry):
