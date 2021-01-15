@@ -17,7 +17,7 @@ Everything happens within the PogoData class. You can import it and initialize w
 >>> data = PogoData(language="german")
 ```
 
-If your script is running 24/7, you might want to stay updated and reload data every so often. You can do that with `PogoData.reload()`, which accepts also accepts a language.
+If your script is running 24/7, you might want to stay updated and reload data every so often. You can do that with `PogoData.reload()`, which also accepts a language.
 
 ```py
 >>> data.reload(language="english")
@@ -56,7 +56,9 @@ Since there can be multiple forms of a Pokémon (e.g. Venusaur, Shadow Venusaur,
 'VENUSAUR'
 ```
 
-Additionally, ever since Shadow Forms have been released, some Pokémon's default forms are `0`, while others have the `NORMAL` type, which gives it an unique Form ID. Using `PogoData.get_default_mon()` you can get the default form used by the game. (The PokeMiners would call this the Shadow Treatment, which some Pokémon receive)
+Additionally, ever since Shadow Forms have been released, some Pokémon's default forms are `0`, while others have the `NORMAL` type, which gives them an unique Form ID. The PokeMiners would call this the Shadow Treatment, that some Pokémon receive.
+
+Using `PogoData.get_default_mon()` you can get the default form used by the game.
 
 ```py
 >>> data.get_default_mon(name="Bidoof").form
@@ -68,4 +70,4 @@ Additionally, ever since Shadow Forms have been released, some Pokémon's defaul
 
 #### Raw
 
-If you want to get raw Proto Enum, Gamemaster or locale data, you can use `PogoData.get_enum()`, `PogoData.get_gamemaster()` and `PogoData.get_locale()`.
+If you want to get raw Proto Enums, Gamemaster entries or locale data, you can use `PogoData.get_enum()`, `PogoData.get_gamemaster()` and `PogoData.get_locale()`.
