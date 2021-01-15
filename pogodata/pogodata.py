@@ -72,7 +72,7 @@ class PogoData:
             objs.append(obj_)
         return objs
 
-    def __get_object(self, obj_list, args, match_one=True):
+    def __get_object(self, obj_list, args, match_all=False):
         final = []
         for obj in obj_list:
             wanted = True
@@ -81,22 +81,32 @@ class PogoData:
                     wanted = False
 
             if wanted:
-                if match_one:
+                if not match_all:
                     return obj
                 final.append(obj)
 
-        if not match_one:
+        if match_all:
             return final
 
         return None
 
-    def get_mon(self, get_one=True, **args):
-        mon = self.__get_object(self.mons, args, get_one)
+    def get_mon(self, get_all=False, **args):
+        mon = self.__get_object(self.mons, args, get_all)
         if args.get("costume", 0) > 0:
             mon = mon.copy()
             mon.costume = args["costume"]
             mon._gen_asset()
 
+        return mon
+
+    def get_default_mon(self, **args):
+        args["form"] = 0
+        mon = self.__get_object(self.mons, args)
+        if not mon:
+            return None
+        normal_mon = self.__get_object(self.mons, {"template": mon.base_template + "_NORMAL"})
+        if normal_mon:
+            mon = normal_mon
         return mon
 
     def get_type(self, **args):
