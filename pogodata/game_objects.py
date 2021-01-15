@@ -8,9 +8,12 @@ class GameObject:
         return self.template
 
 class GameMasterObject(GameObject):
-    def __init__(self, id_, template, gamemaster_entry, settings_name):
+    def __init__(self, id_, template, gamemaster_entry, settings_name=""):
         super().__init__(id_, template)
-        self.raw = gamemaster_entry.get("data", {}).get(settings_name, {})
+        if "data" in gamemaster_entry:
+            self.raw = gamemaster_entry.get("data", {}).get(settings_name, {})
+        else:
+            self.raw = gamemaster_entry
 
 def __make_gameobject_list(pogodata, enum, locale_key):
     types = []

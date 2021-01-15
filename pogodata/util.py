@@ -1,5 +1,7 @@
 import requests
 
+POKEMON_TYPES = ["BASE", "FORM", "TEMP_EVOLUTION"]
+
 def httpget(url):
     return requests.get(url)
 
