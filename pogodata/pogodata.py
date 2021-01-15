@@ -1,9 +1,7 @@
 import re
 
 from .util import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
-from .grunts import make_grunt_list
-
-from .objects import Pokemon, Type, Item, Move, Raids
+from .objects import Pokemon, Type, Item, Move, Raids, Grunt
 
 class PogoData:
     """The class holding all data this module provides
@@ -62,9 +60,9 @@ class PogoData:
             Type
         )
         self.__make_move_list()
-        self.grunts = make_grunt_list(self)
         self.__make_mon_list()
         self.__make_raid_list()
+        self.__make_grunt_list()
 
     def __make_simple_gameobject_list(self, enum, locale_key, obj):
         objs = []
@@ -197,6 +195,31 @@ class PogoData:
 
                 if mon:
                     self.raids.add_mon(level, mon)
+
+    def __make_grunt_list(self):
+        info_grunts = httpget(INFO_URL + "active/grunts.json").json()
+        self.grunts = []
+        enums = self.get_enum("InvasionCharacter")
+        for templateid, entry in self.get_gamemaster(r"^CHARACTER_.*", "invasionNpcDisplaySettings"):
+            id_ = enums.get(templateid, 0)
+
+            grunt_info = info_grunts.get(str(id_))
+            team = []
+            if grunt_info:
+                for i, team_position in enumerate(grunt_info.get("lineup", {}).get("team", [])):
+                    team.append([])
+                    for raw_mon in team_position:
+                        team[i].append(self.get_mon(template=raw_mon["template"]))
+
+            grunt = Grunt(id_, templateid, entry, grunt_info, team)
+            grunt.name = self.get_locale(grunt.raw.get("trainerName", "combat_grunt_name"))
+
+            if [t for t in grunt.template.split("_") if t in ["EXECUTIVE", "GIOVANNI"]]:
+                grunt.boss = True
+                
+            grunt.type = self.get_type(template=grunt.template.split("_")[1])
+
+            self.grunts.append(grunt)
 
     def __make_mon_list(self):
         def __typing(mon, type1ref, type2ref):

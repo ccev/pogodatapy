@@ -29,6 +29,29 @@ class Move(GameMasterObject):
         super().__init__(move_id, template, gamemaster_entry)
         self.type = None
 
+class Grunt(GameMasterObject):
+    def __init__(self, id_, template, entry, pogoinfo_data, team):
+        super().__init__(id_, template, entry)
+
+        if self.raw.get("isMale", False):
+            self.gender = 1
+        else:
+            self.gender = 0
+
+        self.boss = False
+        self.type = None
+
+        self.active = pogoinfo_data.get("active", False)
+        self.team = team
+        self.__reward_positions = pogoinfo_data.get("lineup", {}).get("rewards", [])
+
+    @property
+    def rewards(self):
+        rewards = []
+        for index in self.__reward_positions:
+            rewards += self.team[index]
+        return rewards
+
 class RaidIterator:
     def __init__(self, raids):
         self.mons = []
