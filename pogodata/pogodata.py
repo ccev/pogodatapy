@@ -1,11 +1,9 @@
 import re
 
-from .util import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL
+from .util import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
 from .grunts import make_grunt_list
 
-from .objects import Pokemon, Type, Item, Move
-
-
+from .objects import Pokemon, Type, Item, Move, Raids
 
 class PogoData:
     """The class holding all data this module provides
@@ -65,8 +63,8 @@ class PogoData:
         )
         self.__make_move_list()
         self.grunts = make_grunt_list(self)
-
         self.__make_mon_list()
+        self.__make_raid_list()
 
     def __make_simple_gameobject_list(self, enum, locale_key, obj):
         objs = []
@@ -173,6 +171,32 @@ class PogoData:
             move.type = self.get_type(template=move.raw.get("type"))
             move.name = self.get_locale("move_name_" + str(move.id).zfill(4))
             self.moves.append(move)
+
+    def __make_raid_list(self):
+        self.raids = Raids()
+        raw_raids = httpget(INFO_URL + "active/raids.json").json()
+        for level, mons in raw_raids.items():
+            for raw_mon in mons:
+                if not raw_mon:
+                    continue
+                if "evolution" in raw_mon:
+                    base_mon = self.get_mon(
+                        id=raw_mon.get("id"),
+                        form=raw_mon.get("form"),
+                        costume=raw_mon.get("costume")
+                    )
+                    for evo in base_mon.temp_evolutions:
+                        if evo.id == raw_mon.get("evolution"):
+                            mon = evo
+                            break
+                else:
+                    mon = self.get_mon(
+                        template=raw_mon.get("template"),
+                        costume=raw_mon.get("costume", 0)
+                    )
+
+                if mon:
+                    self.raids.add_mon(level, mon)
 
     def __make_mon_list(self):
         def __typing(mon, type1ref, type2ref):
