@@ -91,6 +91,33 @@ class PogoData:
         return None
 
     def get_mon(self, get_all=False, **args):
+        """Find a Pokémon that matches every parameter given.
+
+        Parameters
+        ----------
+        get_all: :class:`bool`
+            If False, return the first matching Pokémon. If True, return all matching Pokémon.
+            Defaults to False.
+        id: :class:`int`
+        template: :class:`str`
+        type: `BASE`, `FORM` or `TEMP_EVOLUTION`
+        form: 
+        base_template
+        costume
+        asset
+        temp_evolution_id
+        temp_evolution_template
+        types
+        qick_moves
+        charge_moves
+        evolutions
+        temp_evolutions
+
+
+
+        Returns
+        -------
+        """
         mon = self.__get_object(self.mons, args, get_all)
         if args.get("costume", 0) > 0:
             mon = mon.copy()
@@ -248,8 +275,8 @@ class PogoData:
         for templateid, entry in self.get_gamemaster(pattern+".*", "pokemonSettings"):
             template = re.sub(pattern, "", templateid)
             form_id = forms.get(template, 0)
-            mon_id = mon_ids.get(template, 0)
-            mon = Pokemon(entry, form_id, template, mon_id)
+            mon = Pokemon(entry, form_id, template)
+            mon.id = mon_ids.get(mon.base_template, 0)
 
             locale_key = "pokemon_name_" + str(mon.id).zfill(4)
             mon.name = self.get_locale(locale_key)

@@ -84,8 +84,8 @@ class Raids:
         return self.raids.get(key, [])
 
 class Pokemon(GameMasterObject):
-    def __init__(self, gamemaster_entry, form_id, template, mon_id):
-        super().__init__(mon_id, template, gamemaster_entry)
+    def __init__(self, gamemaster_entry, form_id, template):
+        super().__init__(0, template, gamemaster_entry)
 
         self.form = form_id
         self.base_template = self.raw.get("pokemonId", "")
