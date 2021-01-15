@@ -8,6 +8,11 @@ PogoData is a Python module that allows developers to easily integrate up-to-dat
 
 This is a guide on how to use this module. A proper wiki will follow.
 
+### Termology
+- "template": the string-IDs used in the Proto. In the GameMaster they're referred to as tempplateId. E.g. `BULBASAUR`, `PIKACHU_NORMAL`, `ITEM_POKE_BALL`
+- "mon": Pokémon
+- "grunt": A NPC you can battle (Team Rocket guys, Team leaders)
+
 ### Initializing
 
 Everything happens within the PogoData class. You can import it and initialize with a language, which must be one of [these](https://github.com/PokeMiners/pogo_assets/tree/master/Texts/Latest%20APK/JSON). Default is `english`
@@ -71,3 +76,13 @@ Using `PogoData.get_default_mon()` you can get the default form used by the game
 #### Raw
 
 If you want to get raw Proto Enums, Gamemaster entries or locale data, you can use `PogoData.get_enum()`, `PogoData.get_gamemaster()` and `PogoData.get_locale()`.
+
+- `get_enum(enum, reverse=False)`
+
+    Takes an enum-name and looks fo it in the Protos, then converts its data to a dict, that looks maps a template (str) to an ID (int). If reverse = True, the keys and values are getting reverse to map an ID to a template. The enum search is case insensitive. Returns and emoty dict if no enum is found.
+
+- `get_locale(key)`
+    Returns the translation of `key` based on the in-game locale files ([english](https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_english.json)). Case insensitive. Returns "?" If they key is not found.
+    
+- `get_gamemaster(pattern, settings=None)`
+    tbd
