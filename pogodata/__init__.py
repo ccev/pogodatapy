@@ -1,2 +1,2 @@
 from .pogodata import PogoData
-from .util import POKEMON_TYPES
+from .misc import POKEMON_TYPES

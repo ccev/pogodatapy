@@ -1,6 +1,6 @@
 import re
 
-from .util import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
+from .misc import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
 from .objects import Pokemon, Type, Item, Move, Raids, Grunt, Weather
 
 class PogoData:
@@ -78,7 +78,12 @@ class PogoData:
         for obj in obj_list:
             wanted = True
             for key, value in args.items():
-                if obj.__dict__.get(key) != value:
+                big_value = obj.__dict__.get(key)
+
+                if isinstance(big_value, list):
+                    if not set(value).issubset(set(big_value)):
+                        wanted = False
+                elif big_value != value:
                     wanted = False
 
             if wanted:

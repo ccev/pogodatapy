@@ -1,5 +1,5 @@
 import copy
-from .util import POKEMON_TYPES
+from .misc import POKEMON_TYPES
 
 class GameObject:
     def __init__(self, id_, template):
