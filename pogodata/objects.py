@@ -1,5 +1,5 @@
 import copy
-from .misc import POKEMON_TYPES
+from .enums import PokemonType
 
 class GameObject:
     def __init__(self, id_, template):
@@ -57,6 +57,11 @@ class Grunt(GameMasterObject):
             rewards += self.team[index]
         return rewards
 
+class Quest:
+    def __init__(self):
+        pass
+
+
 class RaidIterator:
     def __init__(self, raids):
         self.mons = []
@@ -112,9 +117,9 @@ class Pokemon(GameMasterObject):
         self.temp_evolution_template = ""
 
         if self.template == self.base_template:
-            self.type = POKEMON_TYPES[0]
+            self.type = PokemonType.BASE
         else:
-            self.type = POKEMON_TYPES[1]
+            self.type = PokemonType.FORM
 
     def copy(self):
         return copy.deepcopy(self)

@@ -1,7 +1,5 @@
 import requests
 
-POKEMON_TYPES = ["BASE", "FORM", "TEMP_EVOLUTION"]
-
 INFO_URL = "https://raw.githubusercontent.com/ccev/pogoinfo/v2/"
 PROTO_URL = "https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/base.proto"
 GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"

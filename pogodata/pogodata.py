@@ -1,7 +1,9 @@
 import re
 
-from .misc import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
+from enum import Enum
+from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
 from .objects import Pokemon, Type, Item, Move, Raids, Grunt, Weather
+from .enums import PokemonType
 
 class PogoData:
     """The class holding all data this module provides
@@ -64,6 +66,7 @@ class PogoData:
         self.__make_mon_list()
         self.__make_raid_list()
         self.__make_grunt_list()
+        self.__make_quest_list()
 
     def __make_simple_gameobject_list(self, enum, locale_key, obj):
         objs = []
@@ -82,6 +85,9 @@ class PogoData:
 
                 if isinstance(big_value, list):
                     if not set(value).issubset(set(big_value)):
+                        wanted = False
+                elif isinstance(big_value, Enum):
+                    if not ((big_value.value == value) or (big_value.name == value) or (big_value == value)):
                         wanted = False
                 elif big_value != value:
                     wanted = False
@@ -279,6 +285,10 @@ class PogoData:
 
             self.grunts.append(grunt)
 
+    def __make_quest_list(self):
+        pass
+
+
     def __make_mon_list(self):
         def __typing(mon, type1ref, type2ref):
             typings = [mon.raw.get(type1ref), mon.raw.get(type2ref)]
@@ -312,7 +322,7 @@ class PogoData:
             # Handling Temp (Mega) Evolutions
             for temp_evo in mon.raw.get("tempEvoOverrides", []):
                 evo = mon.copy()
-                evo.type = POKEMON_TYPES[2]
+                evo.type = PokemonType.TEMP_EVOLUTION
 
                 evo.temp_evolution_template = temp_evo.get("tempEvoId")
                 evo.temp_evolution_id = megas.get(evo.temp_evolution_template)
@@ -336,7 +346,7 @@ class PogoData:
                 if not mon:
                     mon = self.get_mon(template=formsettings["pokemon"])
                     mon = mon.copy()
-                    mon.type = POKEMON_TYPES[1]
+                    mon.type = PokemonType.FORM
                     mon.template = form.get("form")
                     mon.form = form_enums.get(mon.template)
                     self.mons.append(mon) 
