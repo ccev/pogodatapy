@@ -161,7 +161,7 @@ class PogoData:
 
         proto = re.findall(f"enum {enum} "+r"{[^}]*}", self.raw_protos, re.IGNORECASE)
         if len(proto) == 0:
-            raise KeyError(f"Could not find Enum {enum}")
+            return {}
 
         proto = proto[0].replace("\t", "")
 
