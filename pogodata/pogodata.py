@@ -1,7 +1,7 @@
 import re
 
 from .util import httpget, POKEMON_TYPES, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
-from .objects import Pokemon, Type, Item, Move, Raids, Grunt
+from .objects import Pokemon, Type, Item, Move, Raids, Grunt, Weather
 
 class PogoData:
     """The class holding all data this module provides
@@ -59,6 +59,7 @@ class PogoData:
             "{template}",
             Type
         )
+        self.__make_weather_list()
         self.__make_move_list()
         self.__make_mon_list()
         self.__make_raid_list()
@@ -148,6 +149,9 @@ class PogoData:
     def get_move(self, **args):
         return self.__get_object(self.moves, args)
 
+    def get_weather(self, **args):
+        return self.__get_object(self.weather, args)
+
     def get_grunt(self, **args):
         return self.__get_object(self.grunts, args)
 
@@ -194,6 +198,18 @@ class PogoData:
         return result
 
     # Build lists
+
+    def __make_weather_list(self):
+        self.weather = []
+        wather_enum = self.get_enum("WeatherCondition")
+        for _, entry in self.get_gamemaster(r"^WEATHER_AFFINITY_.*", "weatherAffinities"):
+            template = entry["weatherCondition"]
+            weather = Weather(template, entry, wather_enum.get(template))
+            weather.name = self.get_locale("weather_" + template)
+            for boost_type in entry["pokemonType"]:
+                type_ = self.get_type(template=boost_type)
+                weather.type_boosts.append(type_)
+            self.weather.append(weather)
 
     def __make_move_list(self):
         self.moves = []

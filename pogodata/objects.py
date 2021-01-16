@@ -29,6 +29,11 @@ class Move(GameMasterObject):
         super().__init__(move_id, template, gamemaster_entry)
         self.type = None
 
+class Weather(GameMasterObject):
+    def __init__(self, template, entry, wid):
+        super().__init__(wid, template, entry)
+        self.type_boosts = []
+
 class Grunt(GameMasterObject):
     def __init__(self, id_, template, entry, pogoinfo_data, team):
         super().__init__(id_, template, entry)
