@@ -341,6 +341,7 @@ class PogoData:
             form_id = forms.get(template, 0)
             mon = Pokemon(entry, form_id, template)
             mon.id = mon_ids.get(mon.base_template, 0)
+            mon._gen_asset()
 
             locale_key = "pokemon_name_" + str(mon.id).zfill(4)
             mon.name = self.get_locale(locale_key)
