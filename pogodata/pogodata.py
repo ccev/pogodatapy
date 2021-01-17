@@ -31,10 +31,13 @@ class PogoData:
         All Grunts.
     """
     def __init__(self, language="english", update_interval=24, icon_url=""):
-        self.language = language
+        self.__make_locale_url(language)
         self.update_interval = update_interval
         self.icon_url = icon_url
         self.reload()
+
+    def __make_locale_url(self, language):
+        self.__locale_url = LOCALE_URL.format(lang=language.lower())
 
     def reload(self, language=None):
         """Reloads all data, as if you'd re-initialize the class.
@@ -47,12 +50,12 @@ class PogoData:
         """
         self.__cached_enums = {}
         if language:
-            self.language = language
+            self.__make_locale_url(language)
 
         self.raw_protos = httpget(PROTO_URL).text
         self.raw_gamemaster = httpget(GAMEMASTER_URL).json()
 
-        raw_locale = httpget(LOCALE_URL.format(lang=self.language.lower())).json()["data"]
+        raw_locale = httpget(self.__locale_url).json()["data"]
         self.locale = {}
         for i in range(0, len(raw_locale), 2):
             self.locale[raw_locale[i]] = raw_locale[i+1]
