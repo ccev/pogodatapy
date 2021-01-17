@@ -389,7 +389,7 @@ class PogoData:
                 if asset_value or asset_suffix:
                     mon.asset_value = asset_value
                     mon.asset_suffix = asset_suffix
-                    mon._gen_asset()
+                mon._gen_asset()
 
         # Temp Evolution assets
         evo_gm = self.get_gamemaster(
