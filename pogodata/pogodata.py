@@ -1,10 +1,16 @@
-from datetime import datetime
+import pickle
 import re
+
+from datetime import datetime
 
 from enum import Enum
 from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
 from .objects import Pokemon, Type, Item, Move, Raids, Grunt, Weather
 from .enums import PokemonType
+
+def load_pogodata(path="", name="__pogodata_save__"):
+    with open(f"{path}{name}.pickle", "rb") as handle:
+        return(pickle.load(handle))
 
 class PogoData:
     """The class holding all data this module provides
@@ -85,6 +91,10 @@ class PogoData:
         
         if (datetime.utcnow() - self.updated).seconds // 3600 >= self.update_interval:
             self.reload()
+
+    def save(self, path="", name="__pogodata_save__"):
+        with open(f"{path}{name}.pickle", "wb") as handle:
+            pickle.dump(self, handle)
 
     def __make_simple_gameobject_list(self, enum, locale_key, obj):
         objs = []

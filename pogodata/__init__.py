@@ -1,1 +1,1 @@
-from .pogodata import PogoData
+from .pogodata import PogoData, load_pogodata
