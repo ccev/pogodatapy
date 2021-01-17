@@ -9,3 +9,4 @@ class QuestType(Enum):
     BASE = 1
     EVENT = 2
     SPONSORED = 3
+    AR = 4

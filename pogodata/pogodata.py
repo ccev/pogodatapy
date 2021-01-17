@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 
 from enum import Enum
@@ -29,12 +30,13 @@ class PogoData:
     grunts: List[:class:`.grunts.Grunt`]
         All Grunts.
     """
-    def __init__(self, language="english", icon_url=""):
-        self.__cached_enums = {}
+    def __init__(self, language="english", update_interval=24, icon_url=""):
+        self.language = language
+        self.update_interval = update_interval
         self.icon_url = icon_url
-        self.reload(language)
+        self.reload()
 
-    def reload(self, language="english"):
+    def reload(self, language=None):
         """Reloads all data, as if you'd re-initialize the class.
 
         Parameters
@@ -43,13 +45,19 @@ class PogoData:
             The language used for translations. Default: english
             Available languages: https://github.com/PokeMiners/pogo_assets/tree/master/Texts/Latest%20APK/JSON
         """
+        self.__cached_enums = {}
+        if language:
+            self.language = language
+
         self.raw_protos = httpget(PROTO_URL).text
         self.raw_gamemaster = httpget(GAMEMASTER_URL).json()
 
-        raw_locale = httpget(LOCALE_URL.format(lang=language.lower())).json()["data"]
+        raw_locale = httpget(LOCALE_URL.format(lang=self.language.lower())).json()["data"]
         self.locale = {}
         for i in range(0, len(raw_locale), 2):
             self.locale[raw_locale[i]] = raw_locale[i+1]
+
+        self.updated = datetime.utcnow()
 
         self.items = self.__make_simple_gameobject_list(
             "Item",
@@ -68,6 +76,13 @@ class PogoData:
         self.__make_grunt_list()
         self.__make_quest_list()
 
+    def check_update(self):
+        if not self.update_interval:
+            return
+        
+        if (datetime.utcnow() - self.updated).seconds // 3600 >= self.update_interval:
+            self.reload()
+
     def __make_simple_gameobject_list(self, enum, locale_key, obj):
         objs = []
         for template, id_ in self.get_enum(enum).items():
@@ -77,6 +92,8 @@ class PogoData:
         return objs
 
     def __get_object(self, obj_list, args, match_all=False):
+        self.check_update()
+
         final = []
         for obj in obj_list:
             wanted = True
@@ -167,9 +184,11 @@ class PogoData:
         return self.__get_object(self.grunts, args)
 
     def get_locale(self, key):
+        self.check_update()
         return self.locale.get(key.lower(), "?")
 
     def get_enum(self, enum, reverse=False):
+        self.check_update()
         cached = self.__cached_enums.get(enum.lower())
         if cached:
             return cached
@@ -195,6 +214,7 @@ class PogoData:
         return final
 
     def get_gamemaster(self, pattern, settings=None):
+        self.check_update()
         result = []
         for entry in self.raw_gamemaster:
             templateid = entry.get("templateId", "")
