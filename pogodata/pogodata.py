@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 from enum import Enum
-from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, INFO_URL
+from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, REMOTE_LOCALE_URL, INFO_URL
 from .objects import Pokemon, Type, Item, Move, Raids, Grunt, Weather
 from .enums import PokemonType
 
@@ -43,7 +43,16 @@ class PogoData:
         self.reload()
 
     def __make_locale_url(self, language):
-        self.__locale_url = LOCALE_URL.format(lang=language.lower())
+        lang = language.lower().capitalize()
+        self.__locale_url = LOCALE_URL.format(lang=lang)
+        self.__remote_locale_url = REMOTE_LOCALE_URL.format(lang=lang)
+
+    def __make_locale(self, url):
+        raw = httpget(url).text
+        keys = re.findall(r"(?<=RESOURCE ID: ).*", raw)
+        values = re.findall(r"(?<=TEXT: ).*", raw)
+
+        return {keys[i]: values[i] for i in range(len(keys))}
 
     def reload(self, language=None):
         """Reloads all data, as if you'd re-initialize the class.
@@ -61,10 +70,9 @@ class PogoData:
         self.raw_protos = httpget(PROTO_URL).text
         self.raw_gamemaster = httpget(GAMEMASTER_URL).json()
 
-        raw_locale = httpget(self.__locale_url).json()["data"]
-        self.locale = {}
-        for i in range(0, len(raw_locale), 2):
-            self.locale[raw_locale[i]] = raw_locale[i+1]
+        apk_locale = self.__make_locale(self.__locale_url)
+        remote_locale = self.__make_locale(self.__remote_locale_url)
+        self.locale = {**apk_locale, **remote_locale}
 
         self.updated = datetime.utcnow()
 
