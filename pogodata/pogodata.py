@@ -52,7 +52,7 @@ class PogoData:
         keys = re.findall(r"(?<=RESOURCE ID: ).*", raw)
         values = re.findall(r"(?<=TEXT: ).*", raw)
 
-        return {keys[i]: values[i] for i in range(len(keys))}
+        return {keys[i].strip("\r"): values[i].strip("\r") for i in range(len(keys))}
 
     def reload(self, language=None):
         """Reloads all data, as if you'd re-initialize the class.
@@ -345,7 +345,11 @@ class PogoData:
         # Creating a base mon list based on GM entries
         pattern = r"^V\d{4}_POKEMON_"
         for templateid, entry in self.get_gamemaster(pattern+".*", "pokemonSettings"):
-            template = re.sub(pattern, "", templateid)
+            template = entry.get("form", entry.get("pokemonId"))
+
+            if not template:
+                continue
+
             form_id = forms.get(template, 0)
             mon = Pokemon(entry, form_id, template)
             mon.id = mon_ids.get(mon.base_template, 0)
