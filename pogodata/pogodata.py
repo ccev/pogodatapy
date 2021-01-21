@@ -177,14 +177,13 @@ class PogoData:
         return mon
 
     def get_default_mon(self, **args):
-        args["form"] = 0
-        mon = self.__get_object(self.mons, args)
-        if not mon:
+        mons = self.get_mon(get_all=True, **args)
+        if not mons:
             return None
-        normal_mon = self.__get_object(self.mons, {"template": mon.base_template + "_NORMAL"})
-        if normal_mon:
-            mon = normal_mon
-        return mon
+        for mon in mons:
+            if "_NORMAL" in mon.template:
+                return mon
+        return mons[0]
 
     def get_type(self, **args):
         if "template" in args:
@@ -404,6 +403,16 @@ class PogoData:
                     mon.asset_suffix = asset_suffix
                 mon._gen_asset()
 
+                """
+                form_template = mon.template.replace(mon.base_template, "").strip("_")
+                form_name = self.get_locale("form_" + form_template)
+                if form_name == "?":
+                    form_name = self.get_locale("filter_key_" + form_template)
+                if form_name == "?":
+                    form_name = form_template.replace("_", " ").lower()
+                mon.form_name = form_name.capitalize()
+                """
+
         # Temp Evolution assets
         evo_gm = self.get_gamemaster(
             r"^TEMPORARY_EVOLUTION_V\d{4}_POKEMON_.*",
@@ -413,12 +422,14 @@ class PogoData:
             base_template = evos.get("pokemonId", "")
             evos = evos.get("temporaryEvolutions", [])
             for temp_evo_raw in evos:
-                mon = self.get_mon(
+                mons = self.get_mon(
+                    get_all=True,
                     base_template=base_template,
                     temp_evolution_template=temp_evo_raw["temporaryEvolutionId"]
                 )
-                mon.asset_value = temp_evo_raw["assetBundleValue"]
-                mon._gen_asset()
+                for mon in mons:
+                    mon.asset_value = temp_evo_raw["assetBundleValue"]
+                    mon._gen_asset()
 
         # Making Pokemon.evolutions attributes
         for mon in self.mons:

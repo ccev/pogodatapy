@@ -7,6 +7,24 @@ GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/mast
 LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/{lang}.txt"
 REMOTE_LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20Remote/{lang}.txt"
 
+"""
+HARDCODED_FORM_NAMES = {
+    "SHOCK": "shock_drive",
+	"BURN": "burn_drive",
+	"CHILL": "chill_drive",
+	"DOUSE": "douse_drive",
+    "PLANT": "plant_coak",
+    "SANDY": "sandy_coak",
+    "TRASH": "trash_coak",
+    "SUNNY": "sun",
+    "RAINY": "rain",
+    "SNOWY": "snow",
+    "STANDARD": "standard_mode",
+    "ZEN": "zen_mode",
+
+}
+"""
+
 def httpget(url):
     return requests.get(url)
 

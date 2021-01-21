@@ -99,6 +99,7 @@ class Pokemon(GameMasterObject):
 
         self.form = form_id
         self.base_template = self.raw.get("pokemonId", "")
+        #self.form_name = ""
 
         self.quick_moves = []
         self.charge_moves = []
