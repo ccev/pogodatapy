@@ -140,6 +140,9 @@ class PogoData:
 
         return None
 
+    def __none_mon(self):
+        return Pokemon({}, 0, "UNSET")
+
     def get_mon(self, get_all=False, **args):
         """Find a Pokémon that matches every parameter given.
 
@@ -174,12 +177,15 @@ class PogoData:
             mon.costume = args["costume"]
             mon._gen_asset()
 
+        if not mon:
+            mon = self.__none_mon()
+
         return mon
 
     def get_default_mon(self, **args):
         mons = self.get_mon(get_all=True, **args)
         if not mons:
-            return None
+            return self.__none_mon()
         for mon in mons:
             if "_NORMAL" in mon.template:
                 return mon
@@ -189,19 +195,35 @@ class PogoData:
         if "template" in args:
             if not args["template"].startswith("POKEMON_TYPE_"):
                 args["template"] = "POKEMON_TYPE_" + args["template"]
-        return self.__get_object(self.types, args)
+
+        type_ = self.__get_object(self.types, args)
+        if not type_:
+            type_ = Type(0, "UNSET")
+        return type_
 
     def get_item(self, **args):
-        return self.__get_object(self.items, args)
+        item = self.__get_object(self.items, args)
+        if not item:
+            item = Item(0, "UNSET")
+        return item
 
     def get_move(self, **args):
-        return self.__get_object(self.moves, args)
+        move = self.__get_object(self.moves, args)
+        if not move:
+            move = Move("UNSET", {}, 0)
+        return move
 
     def get_weather(self, **args):
-        return self.__get_object(self.weather, args)
+        weather = self.__get_object(self.weather, args)
+        if not weather:
+            weather = Weather("UNSET", {}, 0)
+        return weather
 
     def get_grunt(self, **args):
-        return self.__get_object(self.grunts, args)
+        grunt = self.__get_object(self.grunts, args)
+        if not grunt:
+            grunt = Grunt(0, "UNSET", {}, {}, [])
+        return grunt
 
     def get_locale(self, key):
         self.check_update()

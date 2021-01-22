@@ -1,5 +1,5 @@
 import copy
-from .enums import PokemonType
+from .enums import *
 
 class GameObject:
     def __init__(self, id_, template):
@@ -9,6 +9,9 @@ class GameObject:
     
     def __str__(self):
         return self.template
+
+    def __bool__(self):
+        return bool(self.id)
 
 class GameMasterObject(GameObject):
     def __init__(self, id_, template, gamemaster_entry, settings_name=""):
