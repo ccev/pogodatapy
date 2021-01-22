@@ -1,4 +1,5 @@
 import requests
+import time
 from datetime import datetime
 
 INFO_URL = "https://raw.githubusercontent.com/ccev/pogoinfo/v2/"
@@ -26,7 +27,15 @@ HARDCODED_FORM_NAMES = {
 """
 
 def httpget(url):
-    return requests.get(url)
+    result = None
+    while not result:
+        try:
+            result = requests.get(url)
+        except Exception:
+            pass
+        if not result:
+            time.sleep(60)
+    return result
 
 def get_commit_date(url, branch="master"):
     splits = url.split(f"/{branch}/")
