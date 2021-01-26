@@ -416,7 +416,7 @@ class PogoData:
                     mon.type = PokemonType.FORM
                     mon.template = form.get("form")
                     mon.form = form_enums.get(mon.template)
-                    self.mons.append(mon) 
+                    self.mons.append(mon)
 
                 asset_value = form.get("assetBundleValue")
                 asset_suffix = form.get("assetBundleSuffix")

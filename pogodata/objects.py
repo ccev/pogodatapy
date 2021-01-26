@@ -146,4 +146,8 @@ class Pokemon(GameMasterObject):
                     self.asset += "_" + str(self.costume).zfill(2)
 
     def _make_stats(self):
-        self.stats = [v for v in self.raw.get("stats", {}).values()]
+        stats = self.raw.get("stats")
+        if not stats:
+            self.stats = []
+            return
+        self.stats = [stats["baseAttack"], stats["baseDefense"], stats["baseStamina"]]
