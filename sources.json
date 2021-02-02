@@ -1,0 +1,40 @@
+{
+    "sources": {
+        "pogoinfo": "https://raw.githubusercontent.com/ccev/pogoinfo/v2/",
+        "proto": "https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/base.proto",
+        "gamemaster": "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json",
+        "apk_locale": "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/{lang}.txt",
+        "remote_locale": "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20Remote/{lang}.txt",
+        "pogoassets": "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/"
+    },
+    "icons": {
+        "pogo-outline": {
+            "url": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/icons_large/",
+            "type": "pmsf"
+        },
+        "pogo": {
+            "url": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/no_border/",
+            "type": "pmsf"
+        },
+        "home-outline": {
+            "url": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf_outline_shadow/",
+            "type": "pmsf"
+        },
+        "home": {
+            "url": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf/",
+            "type": "pmsf"
+        },
+        "shuffle": {
+            "url": "https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/PMSF_icons_large/",
+            "type": "pmsf"
+        },
+        "shuffle-shiny": {
+            "url": "https://raw.githubusercontent.com/geekygreek7/pokedave_shuffle_icons_-PMSF-/master/",
+            "type": "pmsf"
+        },
+        "sugimori": {
+            "url": "https://raw.githubusercontent.com/xxleevo/monicons/master/classic/",
+            "type": "pmsf"
+        }
+    }
+}

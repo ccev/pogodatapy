@@ -51,12 +51,12 @@ class Grunt(GameMasterObject):
 
         self.active = pogoinfo_data.get("active", False)
         self.team = team
-        self.__reward_positions = pogoinfo_data.get("lineup", {}).get("rewards", [])
+        self.reward_positions = pogoinfo_data.get("lineup", {}).get("rewards", [])
 
     @property
     def rewards(self):
         rewards = []
-        for index in self.__reward_positions:
+        for index in self.reward_positions:
             rewards += self.team[index]
         return rewards
 
