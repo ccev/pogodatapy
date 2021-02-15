@@ -9,32 +9,39 @@
     },
     "icons": {
         "pogo-outline": {
-            "url": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/icons_large/",
-            "type": "pmsf"
+            "pmsf": {
+                "mons": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/icons_large/"
+            }
         },
         "pogo": {
-            "url": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/no_border/",
-            "type": "pmsf"
+            "pmsf": {
+                "mons": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/no_border/"
+            }
         },
         "home-outline": {
-            "url": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf_outline_shadow/",
-            "type": "pmsf"
+            "pmsf": {
+                "mons": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf_outline_shadow/"
+            }
         },
         "home": {
-            "url": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf/",
-            "type": "pmsf"
+            "pmsf": {
+                "mons": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf/"
+            }
         },
         "shuffle": {
-            "url": "https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/PMSF_icons_large/",
-            "type": "pmsf"
+            "pmsf": {
+                "mons": "https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/PMSF_icons_large/"
+            }
         },
         "shuffle-shiny": {
-            "url": "https://raw.githubusercontent.com/geekygreek7/pokedave_shuffle_icons_-PMSF-/master/",
-            "type": "pmsf"
+            "pmsf": {
+                "mons": "https://raw.githubusercontent.com/geekygreek7/pokedave_shuffle_icons_-PMSF-/master/"
+            }
         },
         "sugimori": {
-            "url": "https://raw.githubusercontent.com/xxleevo/monicons/master/classic/",
-            "type": "pmsf"
+            "pmsf": {
+                "mons": "https://raw.githubusercontent.com/xxleevo/monicons/master/classic/"
+            }
         }
     }
 }

@@ -303,21 +303,7 @@ class PogoData:
             for raw_mon in mons:
                 if not raw_mon:
                     continue
-                if "evolution" in raw_mon:
-                    base_mon = self.get_mon(
-                        id=raw_mon.get("id"),
-                        form=raw_mon.get("form"),
-                        costume=raw_mon.get("costume")
-                    )
-                    for evo in base_mon.temp_evolutions:
-                        if evo.id == raw_mon.get("evolution"):
-                            mon = evo
-                            break
-                else:
-                    mon = self.get_mon(
-                        template=raw_mon.get("template"),
-                        costume=raw_mon.get("costume", 0)
-                    )
+                mon = self.get_mon(**raw_mon)
 
                 if mon:
                     self.raids.add_mon(level, mon)
