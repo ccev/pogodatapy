@@ -315,7 +315,7 @@ class PogoData:
         for templateid, entry in self.get_gamemaster(r"^CHARACTER_.*", "invasionNpcDisplaySettings"):
             id_ = enums.get(templateid, 0)
 
-            grunt_info = info_grunts.get(str(id_))
+            grunt_info = info_grunts.get(str(id_), {})
             team = []
             if grunt_info:
                 for i, team_position in enumerate(grunt_info.get("lineup", {}).get("team", [])):
