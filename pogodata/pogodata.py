@@ -440,7 +440,7 @@ class PogoData:
                     mon._gen_asset()
 
         # Making Pokemon.evolutions attributes
-        for mon in self.mons:
+        def append_evolution(mon, to_append):
             evolutions = mon.raw.get("evolutionBranch", [])
             for evo_raw in evolutions:
                 if "temporaryEvolution" in evo_raw:
@@ -448,4 +448,9 @@ class PogoData:
                 evo = self.get_mon(
                     template=evo_raw.get("form", evo_raw["evolution"])
                 )
-                mon.evolutions.append(evo)
+                to_append.append(evo)
+                append_evolution(evo, to_append)
+        for mon in self.mons:
+            evos = []
+            append_evolution(mon, evos)
+            mon.evolutions = evos
