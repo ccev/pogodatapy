@@ -5,8 +5,9 @@ from datetime import datetime
 
 from enum import Enum
 from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, REMOTE_LOCALE_URL, INFO_URL
-from .objects import Pokemon, Type, Item, Move, Raids, Grunt, Weather
+from .objects import Type, Item, Move, Raids, Grunt, Weather
 from .enums import PokemonType
+from .pokemon import _make_mon_list, Pokemon
 
 def load_pogodata(path="", name="__pogodata_save__"):
     with open(f"{path}{name}.pickle", "rb") as handle:
@@ -88,7 +89,7 @@ class PogoData:
         )
         self.__make_weather_list()
         self.__make_move_list()
-        self.__make_mon_list()
+        _make_mon_list(self)
         self.__make_raid_list()
         self.__make_grunt_list()
         self.__make_quest_list()
@@ -172,10 +173,6 @@ class PogoData:
         -------
         """
         mon = self.__get_object(self.mons, args, get_all)
-        if args.get("costume", 0) > 0:
-            mon = mon.copy()
-            mon.costume = args["costume"]
-            mon._gen_asset()
 
         if not mon:
             mon = self.__none_mon()
@@ -190,6 +187,9 @@ class PogoData:
             if "_NORMAL" in mon.template:
                 return mon
         return mons[0]
+
+    def get_all_mons(self, **args):
+        return self.get_mon(get_all=True, **args)
 
     def get_type(self, **args):
         if "template" in args:
@@ -336,121 +336,7 @@ class PogoData:
     def __make_quest_list(self):
         pass
 
+    def __make_event_list(self):
+        raw_events = httpget(INFO_URL + "active/events.json").json()
+        self.events = []
 
-    def __make_mon_list(self):
-        def __typing(mon, type1ref, type2ref):
-            typings = [mon.raw.get(type1ref), mon.raw.get(type2ref)]
-            for typing in typings:
-                if typing:
-                    mon.types.append(self.get_type(template=typing))
-
-        self.mons = []
-        forms = self.get_enum("Form")
-        megas = self.get_enum("HoloTemporaryEvolutionId")
-        mon_ids = self.get_enum("HoloPokemonId")
-
-        # Creating a base mon list based on GM entries
-        pattern = r"^V\d{4}_POKEMON_"
-        for templateid, entry in self.get_gamemaster(pattern+".*", "pokemonSettings"):
-            template = entry.get("form", entry.get("pokemonId"))
-
-            if not template:
-                continue
-
-            form_id = forms.get(template, 0)
-            mon = Pokemon(entry, form_id, template)
-            mon.id = mon_ids.get(mon.base_template, 0)
-            mon._gen_asset()
-
-            locale_key = "pokemon_name_" + str(mon.id).zfill(4)
-            mon.name = self.get_locale(locale_key)
-
-            mon.quick_moves = [self.get_move(template=t) for t in mon.raw.get("quickMoves", [])]
-            mon.charge_moves = [self.get_move(template=t) for t in mon.raw.get("cinematicMoves", [])]
-
-            __typing(mon, "type", "type2")
-
-            self.mons.append(mon)
-
-            # Handling Temp (Mega) Evolutions
-            for temp_evo in mon.raw.get("tempEvoOverrides", []):
-                evo = mon.copy()
-                evo.type = PokemonType.TEMP_EVOLUTION
-
-                evo.temp_evolution_template = temp_evo.get("tempEvoId")
-                evo.temp_evolution_id = megas.get(evo.temp_evolution_template)
-
-                evo.raw = temp_evo
-                evo.name = self.get_locale(locale_key + "_" + str(evo.temp_evolution_id).zfill(4))
-                evo._make_stats()
-
-                evo.types = []
-                __typing(evo, "typeOverride1", "typeOverride2")
-
-                self.mons.append(evo)
-                mon.temp_evolutions.append(evo)
-
-        # Going through GM Forms and adding missing Forms (Unown, Spinda) and making in-game assets
-        form_enums = self.get_enum("Form")
-        for template, formsettings in self.get_gamemaster(r"^FORMS_V\d{4}_POKEMON_.*", "formSettings"):
-            forms = formsettings.get("forms", [])
-            for form in forms:
-                mon = self.get_mon(template=form.get("form"))
-                if not mon:
-                    mon = self.get_mon(template=formsettings["pokemon"])
-                    mon = mon.copy()
-                    mon.type = PokemonType.FORM
-                    mon.template = form.get("form")
-                    mon.form = form_enums.get(mon.template)
-                    self.mons.append(mon)
-
-                asset_value = form.get("assetBundleValue")
-                asset_suffix = form.get("assetBundleSuffix")
-                if asset_value or asset_suffix:
-                    mon.asset_value = asset_value
-                    mon.asset_suffix = asset_suffix
-                mon._gen_asset()
-
-                """
-                form_template = mon.template.replace(mon.base_template, "").strip("_")
-                form_name = self.get_locale("form_" + form_template)
-                if form_name == "?":
-                    form_name = self.get_locale("filter_key_" + form_template)
-                if form_name == "?":
-                    form_name = form_template.replace("_", " ").lower()
-                mon.form_name = form_name.capitalize()
-                """
-
-        # Temp Evolution assets
-        evo_gm = self.get_gamemaster(
-            r"^TEMPORARY_EVOLUTION_V\d{4}_POKEMON_.*",
-            "temporaryEvolutionSettings"
-        )
-        for base_template, evos in evo_gm:
-            base_template = evos.get("pokemonId", "")
-            evos = evos.get("temporaryEvolutions", [])
-            for temp_evo_raw in evos:
-                mons = self.get_mon(
-                    get_all=True,
-                    base_template=base_template,
-                    temp_evolution_template=temp_evo_raw["temporaryEvolutionId"]
-                )
-                for mon in mons:
-                    mon.asset_value = temp_evo_raw["assetBundleValue"]
-                    mon._gen_asset()
-
-        # Making Pokemon.evolutions attributes
-        def append_evolution(mon, to_append):
-            evolutions = mon.raw.get("evolutionBranch", [])
-            for evo_raw in evolutions:
-                if "temporaryEvolution" in evo_raw:
-                    continue
-                evo = self.get_mon(
-                    template=evo_raw.get("form", evo_raw["evolution"])
-                )
-                to_append.append(evo)
-                append_evolution(evo, to_append)
-        for mon in self.mons:
-            evos = []
-            append_evolution(mon, evos)
-            mon.evolutions = evos
