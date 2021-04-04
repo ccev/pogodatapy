@@ -2,7 +2,7 @@ import re
 import copy
 from .objects import GameMasterObject
 from .enums import PokemonType
-from .misc import httpget
+from .misc import httpget, INGAME_ICONS
 
 class Pokemon(GameMasterObject):
     def __init__(self, gamemaster_entry, form_id, template):
@@ -178,7 +178,7 @@ def _make_mon_list(pogodata):
         append_evolution(mon, evos)
         mon.evolutions = evos
 
-    icons = httpget("https://api.github.com/repos/PokeMiners/pogo_assets/contents/Images/Pokemon").json()
+    icons = httpget(INGAME_ICONS).json()
     icons = [i["name"].replace(".png", "") for i in icons]
 
     for icon in icons:
@@ -194,8 +194,3 @@ def _make_mon_list(pogodata):
             copy.costume = costume
             copy._gen_asset()
             pogodata.mons.append(copy)
-
-    
-
-    #r = re.compile(r"pokemon_icon_\d*_\d*_\d*(?!_shiny)")
-    #print(list(filter(r.match, icons)))

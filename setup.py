@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = "0.5.8"
+version = "0.5.9"
 
 setup(
     name="pogodata",
