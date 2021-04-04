@@ -7,7 +7,8 @@ PROTO_URL = "https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/bas
 GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"
 LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/{lang}.txt"
 REMOTE_LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20Remote/{lang}.txt"
-INGAME_ICONS = "https://api.github.com/repos/PokeMiners/pogo_assets/contents/Images/Pokemon"
+INGAME_ICONS = "https://api.github.com/repos/PokeMiners/pogo_assets/git/trees/{sha}?recursive=true"
+ICON_SHA = "https://api.github.com/repos/PokeMiners/pogo_assets/branches/master"
 
 """
 HARDCODED_FORM_NAMES = {

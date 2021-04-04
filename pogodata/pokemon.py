@@ -2,7 +2,7 @@ import re
 import copy
 from .objects import GameMasterObject
 from .enums import PokemonType
-from .misc import httpget, INGAME_ICONS
+from .misc import httpget, INGAME_ICONS, ICON_SHA
 
 class Pokemon(GameMasterObject):
     def __init__(self, gamemaster_entry, form_id, template):
@@ -178,12 +178,17 @@ def _make_mon_list(pogodata):
         append_evolution(mon, evos)
         mon.evolutions = evos
 
-    icons = httpget(INGAME_ICONS).json()
-    icons = [i["name"].replace(".png", "") for i in icons]
+    master = httpget(ICON_SHA).json()
+    sha = master["commit"]["sha"]
+    icons = httpget(INGAME_ICONS.format(sha=sha)).json()["tree"]
+    icons = [i["path"] for i in icons]
 
     for icon in icons:
-        match = re.match(r"pokemon_icon(_\d*){3}(?!\d*_?shiny)", icon)
+        match = re.match(r"Images/Pokemon/pokemon_icon(_\d*){3}(?!\d*_?shiny).png", icon)
         if match:
+            icon = icon.replace(".png", "")
+            icon = icon.replace("Images/Pokemon/", "")
+
             costume = re.findall(r"_\d*$", icon)[0]
             og_asset = re.sub(costume + "$", "", icon)
             og_asset = re.sub(r"_01$", "_00", og_asset)
