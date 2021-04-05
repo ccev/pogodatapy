@@ -86,3 +86,95 @@ If you want to get raw Proto Enums, Gamemaster entries or locale data, you can u
     
 - `get_gamemaster(pattern, settings=None)`
     tbd
+    
+# Overview
+
+## Pokemon
+
+### Attributes
+- id
+- template
+- name
+- raw
+- form
+- costume
+- base_template
+- quick_moves
+- charge_moves
+- moves
+- types: A list of Type objects belonging to the Mon
+- evolutions: All Pokémon the Mon can evolve to (including the whole family)
+- temp_evolutions: All Pokémon this Mon can be mega-evolved to
+- asset_value
+- asset_suffix
+- asset: The asset name used by the game. E.g. `pokemon_icon_001_00`
+- temp_evolution_id
+- temp_evolution_template
+- type: PokemonType.UNSET, PokemonType.BASE, PokemonType.FORM, PokemonType.TEMP_EVOLUTION, PokemonType.COSTUME
+
+### Methods
+- copy
+
+## Grunt
+
+### Attributes
+- id
+- template
+- name
+- raw
+- gender: female = 0, male = 1
+- boss: False for normal grunts, True for TR leaders
+- type: BasicType.UNSET, BasicType.SET
+- active: True if the grunt is currently available to battle in-game. False if not
+- team: A list of Pokemon objects looking like this: `[[Pokemon, Pokemon], [], []]`. Each sub-list represent one team-slot
+- reward_positions: A list of indexes showing which slots of the team are avcailable as rewards
+- rewards: A list of Pokemon that can be encountered after defeating the grunt
+
+## Type (as in, Pokemon Type)
+
+### Attributes
+- id
+- template
+- name
+
+## Item
+
+### Attributes
+- id
+- template
+- name
+
+## Move
+
+### Attributes
+- id
+- template
+- name
+- raw
+- type: The Pokemon Type belonging to the Move
+
+## Weather
+
+### Attributes
+- id
+- template
+- name
+- raw
+- type_boosts: A list of Types the Weather condition boosts
+
+## Specials
+
+### PogoData.raids
+Can be iterated through to return a tuple of (Raidlevel, Pokemon)
+
+```py
+>>> list(data.raids)
+[(1, Pokemon), (5, Pokemon). (6, Pokemon)]
+```
+
+All Pokemon of a specific Raid Level can be fetched like this:
+
+```py
+>>> data.raids[3]
+[Pokemon, Pokemon, Pokemon]
+```
