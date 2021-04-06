@@ -23,9 +23,6 @@ class GameMasterObject(GameObject):
 class Type(GameObject):
     pass
 
-class Item(GameObject):
-    pass
-
 class Move(GameMasterObject):
     def __init__(self, template, gamemaster_entry, move_id):
         super().__init__(move_id, template, gamemaster_entry)
@@ -35,26 +32,6 @@ class Weather(GameMasterObject):
     def __init__(self, template, entry, wid):
         super().__init__(wid, template, entry)
         self.type_boosts = []
-
-class Grunt(GameMasterObject):
-    def __init__(self, id_, template, entry, pogoinfo_data, team):
-        super().__init__(id_, template, entry)
-
-        if self.raw.get("isMale", False):
-            self.gender = 1
-        else:
-            self.gender = 0
-
-        self.boss = False
-        self.type = None
-
-        self.active = pogoinfo_data.get("active", False)
-        self.team = team
-        self.reward_positions = pogoinfo_data.get("lineup", {}).get("rewards", [])
-        
-        self.rewards = []
-        for index in self.reward_positions:
-            self.rewards += self.team[index]
 
 class Quest:
     def __init__(self):

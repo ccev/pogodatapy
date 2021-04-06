@@ -5,9 +5,12 @@ from datetime import datetime
 
 from enum import Enum
 from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, REMOTE_LOCALE_URL, INFO_URL
-from .objects import Type, Item, Move, Raids, Grunt, Weather
+from .objects import Type, Move, Raids, Weather
 from .enums import PokemonType
 from .pokemon import _make_mon_list, Pokemon
+from .event import _make_event_list, Event
+from .item import _make_item_list, Item
+from .grunt import _make_grunt_list, Grunt
 
 def load_pogodata(path="", name="__pogodata_save__"):
     with open(f"{path}{name}.pickle", "rb") as handle:
@@ -77,22 +80,19 @@ class PogoData:
 
         self.updated = datetime.utcnow()
 
-        self.items = self.__make_simple_gameobject_list(
-            "Item",
-            "{template}_name",
-            Item
-        )
         self.types = self.__make_simple_gameobject_list(
             "HoloPokemonType",
             "{template}",
             Type
         )
+        _make_item_list(self)
         self.__make_weather_list()
         self.__make_move_list()
         _make_mon_list(self)
         self.__make_raid_list()
-        self.__make_grunt_list()
+        _make_grunt_list(self)
         self.__make_quest_list()
+        _make_event_list(self)
 
     def check_update(self):
         if not self.update_interval:
@@ -159,8 +159,7 @@ class PogoData:
         base_template
         costume
         asset
-        temp_evolution_id
-        temp_evolution_template
+        temp_evolution
         types
         qick_moves
         charge_moves
@@ -176,6 +175,8 @@ class PogoData:
 
         if not mon:
             mon = self.__none_mon()
+            if get_all:
+                mon = [mon]
 
         return mon
 
@@ -225,30 +226,40 @@ class PogoData:
             grunt = Grunt(0, "UNSET", {}, {}, [])
         return grunt
 
+    def get_event(self, **args):
+        event = self.__get_object(self.events, args)
+        if not event:
+            event = Event({})
+        return event
+
     def get_locale(self, key):
         self.check_update()
         return self.locale.get(key.lower(), "?")
 
-    def get_enum(self, enum, reverse=False):
+    def get_enum(self, enum, reverse=False, as_enum=False):
         self.check_update()
-        cached = self.__cached_enums.get(enum.lower())
+        cache_key = enum.lower()
+        cached = self.__cached_enums.get(cache_key)
         if cached:
-            return cached
+            final = cached
+        else:
+            proto = re.findall(f"enum {enum} "+r"{[^}]*}", self.raw_protos, re.IGNORECASE)
+            if len(proto) == 0:
+                return {}
 
-        proto = re.findall(f"enum {enum} "+r"{[^}]*}", self.raw_protos, re.IGNORECASE)
-        if len(proto) == 0:
-            return {}
+            proto = proto[0].replace("\t", "")
 
-        proto = proto[0].replace("\t", "")
+            final = {}
+            proto = proto.split("{\n")[1].split("\n}")[0]
+            for entry in proto.split("\n"):
+                k = entry.split(" =")[0]
+                v = int(entry.split("= ")[1].split(";")[0])
+                final[k] = v
 
-        final = {}
-        proto = proto.split("{\n")[1].split("\n}")[0]
-        for entry in proto.split("\n"):
-            k = entry.split(" =")[0]
-            v = int(entry.split("= ")[1].split(";")[0])
-            final[k] = v
+            self.__cached_enums[cache_key] = final
 
-        self.__cached_enums[enum.lower()] = final
+        if as_enum:
+            return Enum(enum, final)
 
         if reverse:
             final = {value:key for key, value in final.items()}
@@ -308,35 +319,6 @@ class PogoData:
                 if mon:
                     self.raids.add_mon(level, mon)
 
-    def __make_grunt_list(self):
-        info_grunts = httpget(INFO_URL + "active/grunts.json").json()
-        self.grunts = []
-        enums = self.get_enum("InvasionCharacter")
-        for templateid, entry in self.get_gamemaster(r"^CHARACTER_.*", "invasionNpcDisplaySettings"):
-            id_ = enums.get(templateid, 0)
-
-            grunt_info = info_grunts.get(str(id_), {})
-            team = []
-            if grunt_info:
-                for i, team_position in enumerate(grunt_info.get("lineup", {}).get("team", [])):
-                    team.append([])
-                    for raw_mon in team_position:
-                        team[i].append(self.get_mon(template=raw_mon["template"]))
-
-            grunt = Grunt(id_, templateid, entry, grunt_info, team)
-            grunt.name = self.get_locale(grunt.raw.get("trainerName", "combat_grunt_name"))
-
-            if [t for t in grunt.template.split("_") if t in ["EXECUTIVE", "GIOVANNI"]]:
-                grunt.boss = True
-                
-            grunt.type = self.get_type(template=grunt.template.split("_")[1])
-
-            self.grunts.append(grunt)
-
     def __make_quest_list(self):
         pass
-
-    def __make_event_list(self):
-        raw_events = httpget(INFO_URL + "active/events.json").json()
-        self.events = []
 

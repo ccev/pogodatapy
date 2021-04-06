@@ -110,7 +110,9 @@ If you want to get raw Proto Enums, Gamemaster entries or locale data, you can u
 - asset: The asset name used by the game. E.g. `pokemon_icon_001_00`
 - temp_evolution_id
 - temp_evolution_template
-- type: PokemonType.UNSET, PokemonType.BASE, PokemonType.FORM, PokemonType.TEMP_EVOLUTION, PokemonType.COSTUME
+- type: PokemonType.UNSET, PokemonType.BASE, PokemonType.FORM, PokemonType.
+TEMP_EVOLUTION, PokemonType.COSTUME
+- stats: (attack, defense, stamina)
 
 ### Methods
 - copy

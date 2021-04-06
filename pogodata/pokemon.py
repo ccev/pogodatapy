@@ -1,14 +1,23 @@
 import re
 import copy
+from math import floor
+from enum import Enum
 from .objects import GameMasterObject
-from .enums import PokemonType
-from .misc import httpget, INGAME_ICONS, ICON_SHA
+from .misc import httpget, INGAME_ICONS, ICON_SHA, CP_MULTIPLIERS
+
+class PokemonType(Enum):
+    UNSET = 0
+    BASE = 1
+    FORM = 2
+    TEMP_EVOLUTION = 3
+    COSTUME = 4
 
 class Pokemon(GameMasterObject):
     def __init__(self, gamemaster_entry, form_id, template):
         super().__init__(0, template, gamemaster_entry)
 
         self.form = form_id
+        self.costume = None
         self.base_template = self.raw.get("pokemonId", "")
         #self.form_name = ""
 
@@ -19,14 +28,11 @@ class Pokemon(GameMasterObject):
         self.temp_evolutions = []
         self._make_stats()
 
-        self.costume = 0
-
         self.asset_value = None
         self.asset_suffix = None
         self._gen_asset()
 
-        self.temp_evolution_id = 0
-        self.temp_evolution_template = ""
+        self.temp_evolution = None
 
         if self.template == self.base_template:
             self.type = PokemonType.BASE
@@ -35,6 +41,13 @@ class Pokemon(GameMasterObject):
 
     def copy(self):
         return copy.deepcopy(self)
+
+    def cp(self, level, ivs):
+        multiplier = CP_MULTIPLIERS.get(level, 0.5)
+        attack = self.stats[0] + ivs[0]
+        defense = self.stats[1] + ivs[1]
+        stamina = self.stats[2] + ivs[2]
+        return floor((attack * defense**0.5 * stamina**0.5 * multiplier**2) / 10)
 
     @property
     def moves(self):
@@ -50,8 +63,8 @@ class Pokemon(GameMasterObject):
                 self.asset += str(self.asset_value)
             else:
                 self.asset += "00"
-                if self.costume:
-                    self.asset += "_" + str(self.costume).zfill(2)
+                if self.costume and self.costume.value:
+                    self.asset += "_" + str(self.costume.value).zfill(2)
 
     def _make_stats(self):
         stats = self.raw.get("stats")
@@ -69,8 +82,9 @@ def _make_mon_list(pogodata):
 
     pogodata.mons = []
     forms = pogodata.get_enum("Form")
-    megas = pogodata.get_enum("HoloTemporaryEvolutionId")
+    megas = pogodata.get_enum("HoloTemporaryEvolutionId", as_enum=True)
     mon_ids = pogodata.get_enum("HoloPokemonId")
+    costumes = pogodata.get_enum("Costume", as_enum=True)
 
     # Creating a base mon list based on GM entries
     pattern = r"^V\d{4}_POKEMON_"
@@ -82,6 +96,8 @@ def _make_mon_list(pogodata):
 
         form_id = forms.get(template, 0)
         mon = Pokemon(entry, form_id, template)
+        mon.costume = costumes(0)
+        mon.temp_evolution = megas(0)
         mon.id = mon_ids.get(mon.base_template, 0)
         mon._gen_asset()
 
@@ -100,11 +116,11 @@ def _make_mon_list(pogodata):
             evo = mon.copy()
             evo.type = PokemonType.TEMP_EVOLUTION
 
-            evo.temp_evolution_template = temp_evo.get("tempEvoId")
-            evo.temp_evolution_id = megas.get(evo.temp_evolution_template)
+            temp_evolution = temp_evo.get("tempEvoId")
+            evo.temp_evolution = megas[temp_evolution]
 
             evo.raw = temp_evo
-            evo.name = pogodata.get_locale(locale_key + "_" + str(evo.temp_evolution_id).zfill(4))
+            evo.name = pogodata.get_locale(locale_key + "_" + str(evo.temp_evolution.value).zfill(4))
             evo._make_stats()
 
             evo.types = []
@@ -156,7 +172,7 @@ def _make_mon_list(pogodata):
             mons = pogodata.get_mon(
                 get_all=True,
                 base_template=base_template,
-                temp_evolution_template=temp_evo_raw["temporaryEvolutionId"]
+                temp_evolution=temp_evo_raw["temporaryEvolutionId"]
             )
             for mon in mons:
                 mon.asset_value = temp_evo_raw["assetBundleValue"]
@@ -196,6 +212,7 @@ def _make_mon_list(pogodata):
 
             mon = pogodata.get_mon(asset=og_asset)
             copy = mon.copy()
-            copy.costume = costume
+            copy.costume = costumes(costume)
             copy._gen_asset()
+            copy.type = PokemonType.COSTUME
             pogodata.mons.append(copy)
