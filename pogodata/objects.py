@@ -1,4 +1,8 @@
-from .enums import BasicType, QuestType
+from enum import Enum
+
+class BasicType(Enum):
+    UNSET = 0
+    SET = 1
 
 class GameObject:
     def __init__(self, id_, template):
@@ -22,18 +26,4 @@ class GameMasterObject(GameObject):
 
 class Type(GameObject):
     pass
-
-class Move(GameMasterObject):
-    def __init__(self, template, gamemaster_entry, move_id):
-        super().__init__(move_id, template, gamemaster_entry)
-        self.type = None
-
-class Weather(GameMasterObject):
-    def __init__(self, template, entry, wid):
-        super().__init__(wid, template, entry)
-        self.type_boosts = []
-
-class Quest:
-    def __init__(self):
-        pass
 

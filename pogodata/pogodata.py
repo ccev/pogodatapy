@@ -11,6 +11,8 @@ from .event import _make_event_list, Event
 from .item import _make_item_list, Item
 from .grunt import _make_grunt_list, Grunt
 from .raid import _make_raid_list
+from .move import _make_move_list, Move
+from .weather import _make_weather_list, Weather
 
 def load_pogodata(path="", name="__pogodata_save__"):
     with open(f"{path}{name}.pickle", "rb") as handle:
@@ -86,12 +88,11 @@ class PogoData:
             Type
         )
         _make_item_list(self)
-        self.__make_weather_list()
-        self.__make_move_list()
+        _make_weather_list(self)
+        _make_move_list(self)
         _make_mon_list(self)
         _make_raid_list(self)
         _make_grunt_list(self)
-        self.__make_quest_list()
         _make_event_list(self)
 
     def check_update(self):
@@ -290,33 +291,3 @@ class PogoData:
                     templateid, data
                 ))
         return result
-
-    # Build lists
-
-    def __make_weather_list(self):
-        self.weather = []
-        wather_enum = self.get_enum("WeatherCondition")
-        for _, entry in self.get_gamemaster(r"^WEATHER_AFFINITY_.*", "weatherAffinities"):
-            template = entry["weatherCondition"]
-            weather = Weather(template, entry, wather_enum.get(template))
-            weather.name = self.get_locale("weather_" + template)
-            for boost_type in entry["pokemonType"]:
-                type_ = self.get_type(template=boost_type)
-                weather.type_boosts.append(type_)
-            self.weather.append(weather)
-
-    def __make_move_list(self):
-        self.moves = []
-        move_enum = self.get_enum("HoloPokemonMove")
-        pattern = r"^COMBAT_V\d{4}_MOVE_"
-        for templateid, entry in self.get_gamemaster(pattern+".*", "combatMove"):
-            template = re.sub(pattern, "", templateid)
-            move_id = move_enum.get(template, 0)
-            move = Move(template, entry, move_id)
-            move.type = self.get_type(template=move.raw.get("type"))
-            move.name = self.get_locale("move_name_" + str(move.id).zfill(4))
-            self.moves.append(move)
-
-    def __make_quest_list(self):
-        pass
-

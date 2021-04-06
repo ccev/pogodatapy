@@ -35,6 +35,10 @@ class Pokemon(GameMasterObject):
         self.temp_evolution = None
         self.temp_evolution_id = 0
 
+        self.deployable = self.raw.get("isDeployable", False)
+        self.transferable = self.raw.get("isTransferable", False)
+        self.tradable = self.raw.get("isTradable", False)
+
         if self.template == self.base_template:
             self.type = PokemonType.BASE
         else:
@@ -107,6 +111,9 @@ def _make_mon_list(pogodata):
 
         mon.quick_moves = [pogodata.get_move(template=t) for t in mon.raw.get("quickMoves", [])]
         mon.charge_moves = [pogodata.get_move(template=t) for t in mon.raw.get("cinematicMoves", [])]
+        
+        mon.elite_charge_moves = [pogodata.get_move(template=t) for t in mon.raw.get("eliteCinematicMove", [])]
+        mon.elite_quick_moves = [pogodata.get_move(template=t) for t in mon.raw.get("eliteCinematicMove", [])]
 
         __typing(mon, "type", "type2")
 
