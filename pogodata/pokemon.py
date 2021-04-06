@@ -33,6 +33,7 @@ class Pokemon(GameMasterObject):
         self._gen_asset()
 
         self.temp_evolution = None
+        self.temp_evolution_id = 0
 
         if self.template == self.base_template:
             self.type = PokemonType.BASE
@@ -118,6 +119,7 @@ def _make_mon_list(pogodata):
 
             temp_evolution = temp_evo.get("tempEvoId")
             evo.temp_evolution = megas[temp_evolution]
+            evo.temp_evolution_id = evo.temp_evolution.value
 
             evo.raw = temp_evo
             evo.name = pogodata.get_locale(locale_key + "_" + str(evo.temp_evolution.value).zfill(4))

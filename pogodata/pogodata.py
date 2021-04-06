@@ -5,12 +5,12 @@ from datetime import datetime
 
 from enum import Enum
 from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, REMOTE_LOCALE_URL, INFO_URL
-from .objects import Type, Move, Raids, Weather
-from .enums import PokemonType
+from .objects import Type, Move, Weather
 from .pokemon import _make_mon_list, Pokemon
 from .event import _make_event_list, Event
 from .item import _make_item_list, Item
 from .grunt import _make_grunt_list, Grunt
+from .raid import _make_raid_list
 
 def load_pogodata(path="", name="__pogodata_save__"):
     with open(f"{path}{name}.pickle", "rb") as handle:
@@ -89,7 +89,7 @@ class PogoData:
         self.__make_weather_list()
         self.__make_move_list()
         _make_mon_list(self)
-        self.__make_raid_list()
+        _make_raid_list(self)
         _make_grunt_list(self)
         self.__make_quest_list()
         _make_event_list(self)
@@ -191,6 +191,16 @@ class PogoData:
 
     def get_all_mons(self, **args):
         return self.get_mon(get_all=True, **args)
+
+    def get_raid(self, get_all=False, **args):
+        raid = self.__get_object(self.raids, args, get_all)
+        if not raid:
+            raid = self.__none_mon()
+            raid.level = 0
+        return raid
+
+    def get_all_raids(self, **args):
+        return self.get_raid(get_all=True, **args)
 
     def get_type(self, **args):
         if "template" in args:
@@ -306,18 +316,6 @@ class PogoData:
             move.type = self.get_type(template=move.raw.get("type"))
             move.name = self.get_locale("move_name_" + str(move.id).zfill(4))
             self.moves.append(move)
-
-    def __make_raid_list(self):
-        self.raids = Raids()
-        raw_raids = httpget(INFO_URL + "active/raids.json").json()
-        for level, mons in raw_raids.items():
-            for raw_mon in mons:
-                if not raw_mon:
-                    continue
-                mon = self.get_mon(**raw_mon)
-
-                if mon:
-                    self.raids.add_mon(level, mon)
 
     def __make_quest_list(self):
         pass
