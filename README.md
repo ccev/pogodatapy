@@ -73,6 +73,15 @@ Using `PogoData.get_default_mon()` you can get the default form used by the game
 # Venusaur's template would be 'VENUSAUR_NORMAL'
 ```
 
+#### Icons
+
+Supported
+
+| Name | Type | Pokemon | Item | Type | Weather | Grunt |
+|---   |---   |---      |---   |---   |---      |---    |
+| POGO | POKEMINERS | ✅ | ✅ (pseudo) | ✅ | ✅ | ❌
+| POGO_OPTIMIZED | PMSF | ✅ | ✅ | ❌ | ❌ | ❌
+
 #### Raw
 
 If you want to get raw Proto Enums, Gamemaster entries or locale data, you can use `PogoData.get_enum()`, `PogoData.get_gamemaster()` and `PogoData.get_locale()`.

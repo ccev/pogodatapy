@@ -3,7 +3,7 @@ import copy
 from math import floor
 from enum import Enum
 from .objects import GameMasterObject
-from .misc import httpget, INGAME_ICONS, ICON_SHA, CP_MULTIPLIERS
+from .misc import httpget, INGAME_ICONS, ICON_SHA, CP_MULTIPLIERS, get_repo_content
 
 class PokemonType(Enum):
     UNSET = 0
@@ -203,10 +203,7 @@ def _make_mon_list(pogodata):
         append_evolution(mon, evos)
         mon.evolutions = evos
 
-    master = httpget(ICON_SHA).json()
-    sha = master["commit"]["sha"]
-    icons = httpget(INGAME_ICONS.format(sha=sha)).json()["tree"]
-    icons = [i["path"] for i in icons]
+    icons = get_repo_content(INGAME_ICONS, ICON_SHA)
 
     for icon in icons:
         match = re.match(r"Images/Pokemon/pokemon_icon(_\d*){3}(?!\d*_?shiny).png", icon)

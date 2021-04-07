@@ -5,7 +5,7 @@ from datetime import datetime
 
 from enum import Enum
 from .misc import httpget, PROTO_URL, GAMEMASTER_URL, LOCALE_URL, REMOTE_LOCALE_URL, INFO_URL
-from .objects import Type, Move, Weather
+from .objects import Type
 from .pokemon import _make_mon_list, Pokemon
 from .event import _make_event_list, Event
 from .item import _make_item_list, Item
@@ -13,6 +13,7 @@ from .grunt import _make_grunt_list, Grunt
 from .raid import _make_raid_list
 from .move import _make_move_list, Move
 from .weather import _make_weather_list, Weather
+from .icons import Icon
 
 def load_pogodata(path="", name="__pogodata_save__"):
     with open(f"{path}{name}.pickle", "rb") as handle:
@@ -42,10 +43,10 @@ class PogoData:
     grunts: List[:class:`.grunts.Grunt`]
         All Grunts.
     """
-    def __init__(self, language="english", update_interval=24, icon_url=""):
+    def __init__(self, language="english", update_interval=24, icons=None):
         self.__make_locale_url(language)
         self.update_interval = update_interval
-        self.icon_url = icon_url
+        self.icon = Icon(icons)
         self.reload()
 
     def __make_locale_url(self, language):

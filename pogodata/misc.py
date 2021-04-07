@@ -8,6 +8,7 @@ PROTO_URL = "https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/bas
 GAMEMASTER_URL = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"
 LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/{lang}.txt"
 REMOTE_LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20Remote/{lang}.txt"
+
 INGAME_ICONS = "https://api.github.com/repos/PokeMiners/pogo_assets/git/trees/{sha}?recursive=true"
 ICON_SHA = "https://api.github.com/repos/PokeMiners/pogo_assets/branches/master"
 
@@ -65,6 +66,14 @@ def match_enum(enum, value):
             type_ = enum(0)
     
     return type_
+
+def get_repo_content(repo_url, sha_url):
+    master = httpget(sha_url).json()
+    sha = master["commit"]["sha"]
+    new_url = repo_url.format(sha=sha)
+    icons = httpget(new_url).json()["tree"]
+    icons = [i["path"] for i in icons]
+    return icons
 
 CP_MULTIPLIERS = {
     1: 0.0939999967813492,

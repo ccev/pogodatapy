@@ -1,4 +1,4 @@
-from .objects import Weather
+from .objects import GameMasterObject
 
 class Weather(GameMasterObject):
     def __init__(self, template, entry, wid):

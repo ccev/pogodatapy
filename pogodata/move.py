@@ -5,9 +5,9 @@ class Move(GameMasterObject):
     def __init__(self, template, gamemaster_entry, move_id):
         super().__init__(move_id, template, gamemaster_entry)
         self.type = None
-        self.power = self.raw["power"]
-        self.energy_delta = self.raw["energyDelta"]
-        self.buffs = self.raw.get("power", {})
+        self.power = self.raw.get("power", 0)
+        self.energy_delta = self.raw.get("energyDelta", 0)
+        self.buffs = self.raw.get("buffs", {})
 
 def _make_move_list(pogodata):
     pogodata.moves = []
