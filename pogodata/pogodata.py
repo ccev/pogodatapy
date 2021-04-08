@@ -46,7 +46,7 @@ class PogoData:
     def __init__(self, language="english", update_interval=24, icons=None):
         self.__make_locale_url(language)
         self.update_interval = update_interval
-        self.icon = Icon(icons)
+        self.__iconset = icons
         self.reload()
 
     def __make_locale_url(self, language):
@@ -61,7 +61,7 @@ class PogoData:
 
         return {keys[i].strip("\r"): values[i].strip("\r") for i in range(len(keys))}
 
-    def reload(self, language=None):
+    def reload(self, language=None, icons=None):
         """Reloads all data, as if you'd re-initialize the class.
 
         Parameters
@@ -73,6 +73,10 @@ class PogoData:
         self.__cached_enums = {}
         if language:
             self.__make_locale_url(language)
+
+        if icons:
+            self.__iconset = icons
+        self.icon = Icon(icons)
 
         self.raw_protos = httpget(PROTO_URL).text
         self.raw_gamemaster = httpget(GAMEMASTER_URL).json()
@@ -144,7 +148,7 @@ class PogoData:
         return None
 
     def __none_mon(self):
-        return Pokemon({}, 0, "UNSET")
+        return Pokemon(self.icon, {}, 0, "UNSET")
 
     def get_mon(self, get_all=False, **args):
         """Find a Pokémon that matches every parameter given.

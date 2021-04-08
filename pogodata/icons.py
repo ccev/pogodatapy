@@ -79,3 +79,25 @@ class Icon:
         elif self.type == IconType.PMSF:
             url = self.url
         return url + "rewards/reward_" + str(item.id) + "_" + str(amount) + ".png"
+
+    def montype(self, montype):
+        if self.type == IconType.POKEMINERS:
+            return self.url + "Images/Types/" + montype.template + ".png"
+    
+    def weather(self, weather, is_day=True):
+        if self.type == IconType.POKEMINERS:
+            westr = weather.template.lower()
+            if weather.id == 1 and is_day:
+                westr = "sunny"
+            elif weather.id == 2:
+                westr = "rain"
+            elif weather.id == 3:
+                westr = "partlycloudy_"
+                if is_day:
+                    westr += "day"
+                else:
+                    westr += "night"
+            elif weather.id == 4:
+                westr = "cloudy"
+            
+            return self.url + f"Images/Weather/weatherIcon_small_{westr}.png"

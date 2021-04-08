@@ -13,7 +13,7 @@ class PokemonType(Enum):
     COSTUME = 4
 
 class Pokemon(GameMasterObject):
-    def __init__(self, gamemaster_entry, form_id, template):
+    def __init__(self, icon, gamemaster_entry, form_id, template):
         super().__init__(0, template, gamemaster_entry)
 
         self.form = form_id
@@ -44,6 +44,8 @@ class Pokemon(GameMasterObject):
         else:
             self.type = PokemonType.FORM
 
+        self.__icon = icon
+
     def copy(self):
         return copy.deepcopy(self)
 
@@ -57,6 +59,10 @@ class Pokemon(GameMasterObject):
     @property
     def moves(self):
         return self.quick_moves + self.charge_moves
+
+    @property
+    def icon_url(self):
+        return self.__icon.pokemon(self)
 
     def _gen_asset(self):
         self.asset = "pokemon_icon_"
@@ -100,7 +106,7 @@ def _make_mon_list(pogodata):
             continue
 
         form_id = forms.get(template, 0)
-        mon = Pokemon(entry, form_id, template)
+        mon = Pokemon(pogodata.icon, entry, form_id, template)
         mon.costume = costumes(0)
         mon.temp_evolution = megas(0)
         mon.id = mon_ids.get(mon.base_template, 0)
