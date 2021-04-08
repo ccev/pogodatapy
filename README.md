@@ -90,6 +90,7 @@ Supported
 | DERP_FLORK | PMSF | ✅\*\* | ❌ | ❌ | ❌ | ❌
 
 \* Item icons are taken from POGO_OPTIMIZED
+
 \*\* May not be updated
 
 #### Raw
