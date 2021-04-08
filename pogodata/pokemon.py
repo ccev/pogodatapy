@@ -1,5 +1,4 @@
 import re
-import copy
 from math import floor
 from enum import Enum
 from .objects import GameMasterObject
@@ -45,9 +44,6 @@ class Pokemon(GameMasterObject):
             self.type = PokemonType.FORM
 
         self.__icon = icon
-
-    def copy(self):
-        return copy.deepcopy(self)
 
     def cp(self, level, ivs):
         multiplier = CP_MULTIPLIERS.get(level, 0.5)

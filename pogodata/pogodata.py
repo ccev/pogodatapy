@@ -218,11 +218,14 @@ class PogoData:
             type_ = Type(self.icon, 0, "UNSET")
         return type_
 
-    def get_item(self, **args):
-        item = self.__get_object(self.items, args)
+    def get_item(self, get_all=False, **args):
+        item = self.__get_object(self.items, args, get_all)
         if not item:
-            item = Item(self.icon, 0, "UNSET")
+            item = Item(self.icon, 0, "UNSET", {})
         return item
+
+    def get_all_items(self, **args):
+        return self.get_item(get_all=True, **args)
 
     def get_move(self, **args):
         move = self.__get_object(self.moves, args)
