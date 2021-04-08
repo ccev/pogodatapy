@@ -81,6 +81,13 @@ Supported
 |---   |---   |---      |---   |---   |---      |---    |
 | POGO | POKEMINERS | ✅ | ✅ (pseudo) | ✅ | ✅ | ❌
 | POGO_OPTIMIZED | PMSF | ✅ | ✅ | ❌ | ❌ | ❌
+| POGO_OUTLINE | PMSF | ✅ | ✅ | ❌ | ❌ | ❌
+| HOME | PMSF | ✅ | ✅ | ❌ | ❌ | ✅
+| HOME_OUTLINE | PMSF | ✅ | ✅ | ❌ | ❌ | ✅
+| SHUFFLE | PMSF | ✅ | ✅ | ❌ | ❌ | ✅
+| SUGMIORI_OPTIMIZED | PMSF | ✅ | ❌ | ❌ | ❌ | ❌
+| DERP_AFD | PMSF | ✅ | ❌ | ❌ | ❌ | ❌
+| DERP_FLORK | PMSF | ✅ (outdated) | ❌ | ❌ | ❌ | ❌
 
 #### Raw
 
