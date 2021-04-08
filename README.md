@@ -78,8 +78,8 @@ Using `PogoData.get_default_mon()` you can get the default form used by the game
 Supported
 
 | Name | Type | Pokemon | Item | Type | Weather | Grunt |
-|---   |---   |---      |---   |---   |---      |---    |
-| POGO | POKEMINERS | ✅ | ✅ (pseudo) | ✅ | ✅ | ❌
+|---   |---   |:---:    |:---: |:---: |:---:    |:---:  |
+| POGO | POKEMINERS | ✅ | ✅\* | ✅ | ✅ | ❌
 | POGO_OPTIMIZED | PMSF | ✅ | ✅ | ❌ | ❌ | ❌
 | POGO_OUTLINE | PMSF | ✅ | ✅ | ❌ | ❌ | ❌
 | HOME | PMSF | ✅ | ✅ | ❌ | ❌ | ✅
@@ -87,7 +87,11 @@ Supported
 | SHUFFLE | PMSF | ✅ | ✅ | ❌ | ❌ | ✅
 | SUGMIORI_OPTIMIZED | PMSF | ✅ | ❌ | ❌ | ❌ | ❌
 | DERP_AFD | PMSF | ✅ | ❌ | ❌ | ❌ | ❌
-| DERP_FLORK | PMSF | ✅ (outdated) | ❌ | ❌ | ❌ | ❌
+| DERP_FLORK | PMSF | ✅\*\* | ❌ | ❌ | ❌ | ❌
+
+\* Item icons are taken from POGO_OPTIMIZED
+
+\*\* May not be updated
 
 #### Raw
 
