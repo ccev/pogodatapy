@@ -114,7 +114,7 @@ class PogoData:
     def __make_simple_gameobject_list(self, enum, locale_key, obj):
         objs = []
         for template, id_ in self.get_enum(enum).items():
-            obj_ = obj(id_, template)
+            obj_ = obj(self.icon, id_, template)
             obj_.name = self.get_locale(locale_key.format(template=template))
             objs.append(obj_)
         return objs
@@ -215,13 +215,13 @@ class PogoData:
 
         type_ = self.__get_object(self.types, args)
         if not type_:
-            type_ = Type(0, "UNSET")
+            type_ = Type(self.icon, 0, "UNSET")
         return type_
 
     def get_item(self, **args):
         item = self.__get_object(self.items, args)
         if not item:
-            item = Item(0, "UNSET")
+            item = Item(self.icon, 0, "UNSET")
         return item
 
     def get_move(self, **args):
@@ -233,13 +233,13 @@ class PogoData:
     def get_weather(self, **args):
         weather = self.__get_object(self.weather, args)
         if not weather:
-            weather = Weather("UNSET", {}, 0)
+            weather = Weather(self.icon, "UNSET", {}, 0)
         return weather
 
     def get_grunt(self, **args):
         grunt = self.__get_object(self.grunts, args)
         if not grunt:
-            grunt = Grunt(0, "UNSET", {}, {}, [])
+            grunt = Grunt(self.icon, 0, "UNSET", {}, {}, [])
         return grunt
 
     def get_event(self, **args):

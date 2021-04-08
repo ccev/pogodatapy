@@ -8,7 +8,7 @@ class Gender(Enum):
     MALE = 2
 
 class Grunt(GameMasterObject):
-    def __init__(self, id_, template, entry, pogoinfo_data, team):
+    def __init__(self, icon, id_, template, entry, pogoinfo_data, team):
         super().__init__(id_, template, entry)
 
         if self.raw.get("isMale", False):
@@ -27,6 +27,12 @@ class Grunt(GameMasterObject):
         for index in self.reward_positions:
             self.rewards += self.team[index]
 
+        self.__icon = icon
+
+    @property
+    def icon_url(self):
+        return self.__icon.grunt(self)
+
 def _make_grunt_list(pogodata):
     info_grunts = httpget(INFO_URL + "active/grunts.json").json()
     pogodata.grunts = []
@@ -42,7 +48,7 @@ def _make_grunt_list(pogodata):
                 for raw_mon in team_position:
                     team[i].append(pogodata.get_mon(template=raw_mon["template"]))
 
-        grunt = Grunt(id_, templateid, entry, grunt_info, team)
+        grunt = Grunt(pogodata.icon, id_, templateid, entry, grunt_info, team)
         grunt.name = pogodata.get_locale(grunt.raw.get("trainerName", "combat_grunt_name"))
 
         if [t for t in grunt.template.split("_") if t in ["EXECUTIVE", "GIOVANNI"]]:

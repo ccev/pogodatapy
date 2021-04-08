@@ -25,5 +25,11 @@ class GameMasterObject(GameObject):
             self.raw = gamemaster_entry
 
 class Type(GameObject):
-    pass
+    def __init__(self, icon, id_, template):
+        super().__init__(id_, template)
+        self.__icon = icon
+
+    @property
+    def icon_url(self):
+        return self.__icon.montype(self)
 

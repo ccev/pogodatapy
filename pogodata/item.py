@@ -3,12 +3,18 @@ from .misc import match_enum
 from .objects import GameMasterObject
 
 class Item(GameMasterObject):
-    def __init__(self, id_, template, gm_entry):
+    def __init__(self, icon, id_, template, gm_entry):
         super().__init__(id_, template, gm_entry)
         self.min_level = gm_entry.get("dropTrainerLevel", 0)
         self.type = None
         self.category = None
         self.food_effects = []
+
+        self.__icon = icon
+
+    @property
+    def icon_url(self):
+        return self.__icon.item(self)
 
 def _make_item_list(pogodata):
     pogodata.items = []
@@ -20,7 +26,7 @@ def _make_item_list(pogodata):
     effects = pogodata.get_enum("HoloItemEffect", as_enum=True)
     for template, entry in item_gm:
         id_ = item_enum[template]
-        item = Item(id_, template, entry)
+        item = Item(pogodata.icon, id_, template, entry)
 
         item.type = match_enum(types, entry.get("itemType", 0))
         item.category = match_enum(categories, entry.get("category", 0))
