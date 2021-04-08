@@ -13,7 +13,7 @@ class IconSet(Enum):
     SHUFFLE = 30
     SUGMIORI_OPTIMIZED = 40
     DERP_AFD = 50
-    DERP_GAMEPRESS = 51
+    DERP_FLORK = 51
     PIXEL_GEN3 = 60
 
 class IconType(Enum):
@@ -28,6 +28,34 @@ ICON_DETAILS = {
     },
     IconSet.POGO_OPTIMIZED: {
         "url": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/no_border/",
+        "type": IconType.PMSF
+    },
+    IconSet.POGO_OUTLINE: {
+        "url": "https://raw.githubusercontent.com/whitewillem/PogoAssets/resized/icons_large/",
+        "type": IconType.PMSF
+    },
+    IconSet.HOME: {
+        "url": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf/",
+        "type": IconType.PMSF
+    },
+    IconSet.HOME_OUTLINE: {
+        "url": "https://raw.githubusercontent.com/nileplumb/PkmnHomeIcons/master/pmsf_OS_128/",
+        "type": IconType.PMSF
+    },
+    IconSet.SHUFFLE: {
+        "url": "https://raw.githubusercontent.com/nileplumb/PkmnShuffleMap/master/PMSF_icons_large/",
+        "type": IconType.PMSF
+    },
+    IconSet.SUGMIORI_OPTIMIZED: {
+        "url": "https://raw.githubusercontent.com/xxleevo/monicons/master/classic/",
+        "type": IconType.PMSF
+    },
+    IconSet.DERP_AFD: {
+        "url": "https://raw.githubusercontent.com/ccev/pogoafd/master/sprites/",
+        "type": IconType.PMSF
+    },
+    IconSet.DERP_FLORK: {
+        "url": "https://raw.githubusercontent.com/xxleevo/monicons/master/derpy/",
         "type": IconType.PMSF
     }
 }
@@ -101,3 +129,7 @@ class Icon:
                 westr = "cloudy"
             
             return self.url + f"Images/Weather/weatherIcon_small_{westr}.png"
+
+    def grunt(self, grunt):
+        if self.type == IconType.PMSF:
+            return self.url + "grunt/" + str(grunt.id) + ".png"
