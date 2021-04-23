@@ -2,6 +2,7 @@ import re
 from enum import Enum
 from .misc import match_enum, get_repo_content
 
+
 class IconSet(Enum):
     POGO = 0
     POGO_OPTIMIZED = 1
@@ -16,10 +17,12 @@ class IconSet(Enum):
     DERP_FLORK = 51
     PIXEL_GEN3 = 60
 
+
 class IconType(Enum):
     PMSF = 0
     UICON = 1
     POKEMINERS = 2
+
 
 ICON_DETAILS = {
     IconSet.POGO: {
@@ -59,6 +62,8 @@ ICON_DETAILS = {
         "type": IconType.PMSF
     }
 }
+
+
 class Icon:
     def __init__(self, iconset=None):
         if iconset is None:

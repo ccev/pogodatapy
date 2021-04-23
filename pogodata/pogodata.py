@@ -13,11 +13,14 @@ from .grunt import _make_grunt_list, Grunt
 from .raid import _make_raid_list
 from .move import _make_move_list, Move
 from .weather import _make_weather_list, Weather
+from .quest import _make_quest_list, Quest
 from .icons import Icon
+
 
 def load_pogodata(path="", name="__pogodata_save__"):
     with open(f"{path}{name}.pickle", "rb") as handle:
-        return(pickle.load(handle))
+        return pickle.load(handle)
+
 
 class PogoData:
     """The class holding all data this module provides
@@ -54,7 +57,8 @@ class PogoData:
         self.__locale_url = LOCALE_URL.format(lang=lang)
         self.__remote_locale_url = REMOTE_LOCALE_URL.format(lang=lang)
 
-    def __make_locale(self, url):
+    @staticmethod
+    def __make_locale(url):
         raw = httpget(url).text
         keys = re.findall(r"(?<=RESOURCE ID: ).*", raw)
         values = re.findall(r"(?<=TEXT: ).*", raw)
@@ -96,6 +100,7 @@ class PogoData:
         _make_weather_list(self)
         _make_move_list(self)
         _make_mon_list(self)
+        _make_quest_list(self)
         _make_raid_list(self)
         _make_grunt_list(self)
         _make_event_list(self)
@@ -208,6 +213,15 @@ class PogoData:
     def get_all_raids(self, **args):
         return self.get_raid(get_all=True, **args)
 
+    def get_quest(self, get_all=False, **args):
+        quest = self.__get_object(self.quests, args, get_all)
+        if not quest:
+            quest = Quest()
+        return quest
+
+    def get_all_quests(self, **args):
+        return self.get_quest(get_all=True, **args)
+
     def get_type(self, **args):
         if "template" in args:
             if not args["template"].startswith("POKEMON_TYPE_"):
@@ -255,16 +269,26 @@ class PogoData:
         self.check_update()
         return self.locale.get(key.lower(), "?")
 
-    def get_enum(self, enum, reverse=False, as_enum=False):
+    def get_enum(self, enum, message=None, reverse=False, as_enum=False):
         self.check_update()
-        cache_key = enum.lower()
+        cache_key = str(message).lower() + ":" + enum.lower()
         cached = self.__cached_enums.get(cache_key)
         if cached:
             final = cached
         else:
-            proto = re.findall(f"enum {enum} "+r"{[^}]*}", self.raw_protos, re.IGNORECASE)
+            if message is not None:
+                protos = re.findall(f"message {message}" + r"[^ß]*?message", self.raw_protos, re.IGNORECASE)
+                # sorry
+
+                if len(protos) == 0:
+                    return
+                protos = protos[0]
+            else:
+                protos = self.raw_protos
+
+            proto = re.findall(f"enum {enum} "+r"{[^}]*}", protos, re.IGNORECASE)
             if len(proto) == 0:
-                return {}
+                return
 
             proto = proto[0].replace("\t", "")
 

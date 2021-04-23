@@ -1,5 +1,6 @@
 from .objects import GameMasterObject
 
+
 class Weather(GameMasterObject):
     def __init__(self, icon, template, entry, wid):
         super().__init__(wid, template, entry)
@@ -9,6 +10,7 @@ class Weather(GameMasterObject):
     @property
     def icon_url(self):
         return self.__icon.weather(self)
+
 
 def _make_weather_list(pogodata):
     pogodata.weather = []

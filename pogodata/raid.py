@@ -1,5 +1,6 @@
 from .misc import httpget, INFO_URL
 
+
 class RaidIterator:
     def __init__(self, raids):
         self.mons = []
@@ -13,6 +14,7 @@ class RaidIterator:
             self._index += 1
             return result
         raise StopIteration
+
 
 class Raids:
     def __init__(self):
@@ -32,6 +34,7 @@ class Raids:
 
     def __getitem__(self, key):
         return self.raids.get(key, [])
+
 
 def _make_raid_list(pogodata):
     pogodata.raids = Raids()

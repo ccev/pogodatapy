@@ -2,10 +2,12 @@ from enum import Enum
 from .objects import GameMasterObject
 from .misc import httpget, INFO_URL
 
+
 class Gender(Enum):
     UNSET = 0
     FEMALE = 1
     MALE = 2
+
 
 class Grunt(GameMasterObject):
     def __init__(self, icon, id_, template, entry, pogoinfo_data, team):
@@ -32,6 +34,7 @@ class Grunt(GameMasterObject):
     @property
     def icon_url(self):
         return self.__icon.grunt(self)
+
 
 def _make_grunt_list(pogodata):
     info_grunts = httpget(INFO_URL + "active/grunts.json").json()

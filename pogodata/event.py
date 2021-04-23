@@ -2,12 +2,14 @@ from enum import Enum
 from datetime import datetime
 from .misc import match_enum, httpget, INFO_URL
 
+
 class EventType(Enum):
     UNKNOWN = 0
     EVENT = 1
     COMMUNITY_DAY = 2
     SPOTLIGHT_HOUR = 3
     RAID_HOUR = 4
+
 
 class EventBonusType(Enum):
     UNKNOWN = 0
@@ -21,11 +23,13 @@ class EventBonusType(Enum):
     LUCKY_EGG = "longer-lucky-egg"
     STAR_PIECE = "longer-star-piece"
 
+
 class EventBonus:
     def __init__(self, bonus):
         self.text = bonus.get("text", "")
         self.type = match_enum(EventBonusType, bonus.get("template", 0))
         self.value = bonus.get("value", 0)
+
 
 class Event:
     def __init__(self, event):
@@ -45,10 +49,12 @@ class Event:
         self.has_quests = event.get("has_quests", False)
         self.has_spawnpoints = event.get("has_spawnpoints", False)
 
-    def __str_to_datetime(self, time):
+    @staticmethod
+    def __str_to_datetime(time):
         if time is None:
             return None
         return datetime.strptime(time, "%Y-%m-%d %H:%M")
+
 
 def __mon_list(raw_list, get_mon):
     final = []
@@ -56,6 +62,7 @@ def __mon_list(raw_list, get_mon):
         mon = get_mon(**raw_mon)
         final.append(mon)
     return final
+
 
 def _make_event_list(pogodata):
     raw_events = httpget(INFO_URL + "active/events.json").json()

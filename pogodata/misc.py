@@ -12,23 +12,6 @@ REMOTE_LOCALE_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/ma
 INGAME_ICONS = "https://api.github.com/repos/PokeMiners/pogo_assets/git/trees/{sha}?recursive=true"
 ICON_SHA = "https://api.github.com/repos/PokeMiners/pogo_assets/branches/master"
 
-"""
-HARDCODED_FORM_NAMES = {
-    "SHOCK": "shock_drive",
-	"BURN": "burn_drive",
-	"CHILL": "chill_drive",
-	"DOUSE": "douse_drive",
-    "PLANT": "plant_coak",
-    "SANDY": "sandy_coak",
-    "TRASH": "trash_coak",
-    "SUNNY": "sun",
-    "RAINY": "rain",
-    "SNOWY": "snow",
-    "STANDARD": "standard_mode",
-    "ZEN": "zen_mode",
-
-}
-"""
 
 def httpget(url):
     result = None
@@ -41,6 +24,7 @@ def httpget(url):
             time.sleep(60)
     return result
 
+
 def get_commit_date(url, branch="master"):
     splits = url.split(f"/{branch}/")
     repo = splits[0].split("content.com/")[1]
@@ -49,12 +33,14 @@ def get_commit_date(url, branch="master"):
     date = httpget(commit_api_url).json()[0]["commit"]["author"]["date"]
     return datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ")
 
+
 def gen_uicon(**args):
     icon = ""
     for key, value in args.items():
         if value > 0:
             icon += key + str(value)
     return icon + ".png"
+
 
 def match_enum(enum, value):
     try:
@@ -67,6 +53,7 @@ def match_enum(enum, value):
     
     return type_
 
+
 def get_repo_content(repo_url, sha_url):
     master = httpget(sha_url).json()
     sha = master["commit"]["sha"]
@@ -74,6 +61,7 @@ def get_repo_content(repo_url, sha_url):
     icons = httpget(new_url).json()["tree"]
     icons = [i["path"] for i in icons]
     return icons
+
 
 CP_MULTIPLIERS = {
     1: 0.0939999967813492,

@@ -2,6 +2,7 @@ import re
 from .misc import match_enum
 from .objects import GameMasterObject
 
+
 class Item(GameMasterObject):
     def __init__(self, icon, id_, template, gm_entry):
         super().__init__(id_, template, gm_entry)
@@ -15,6 +16,7 @@ class Item(GameMasterObject):
     @property
     def icon_url(self):
         return self.__icon.item(self)
+
 
 def _make_item_list(pogodata):
     pogodata.items = []

@@ -4,12 +4,14 @@ from enum import Enum
 from .objects import GameMasterObject
 from .misc import httpget, INGAME_ICONS, ICON_SHA, CP_MULTIPLIERS, get_repo_content
 
+
 class PokemonType(Enum):
     UNSET = 0
     BASE = 1
     FORM = 2
     TEMP_EVOLUTION = 3
     COSTUME = 4
+
 
 class Pokemon(GameMasterObject):
     def __init__(self, icon, gamemaster_entry, form_id, template):
@@ -18,18 +20,17 @@ class Pokemon(GameMasterObject):
         self.form = form_id
         self.costume = None
         self.base_template = self.raw.get("pokemonId", "")
-        #self.form_name = ""
 
         self.quick_moves = []
         self.charge_moves = []
         self.types = []
         self.evolutions = []
         self.temp_evolutions = []
-        self._make_stats()
+        self.make_stats()
 
         self.asset_value = None
         self.asset_suffix = None
-        self._gen_asset()
+        self.gen_asset()
 
         self.temp_evolution = None
         self.temp_evolution_id = 0
@@ -60,7 +61,7 @@ class Pokemon(GameMasterObject):
     def icon_url(self):
         return self.__icon.pokemon(self)
 
-    def _gen_asset(self):
+    def gen_asset(self):
         self.asset = "pokemon_icon_"
         if self.asset_suffix:
             self.asset += str(self.asset_suffix)
@@ -73,12 +74,13 @@ class Pokemon(GameMasterObject):
                 if self.costume and self.costume.value:
                     self.asset += "_" + str(self.costume.value).zfill(2)
 
-    def _make_stats(self):
+    def make_stats(self):
         stats = self.raw.get("stats")
         if not stats:
             self.stats = []
             return
         self.stats = [stats["baseAttack"], stats["baseDefense"], stats["baseStamina"]]
+
 
 def _make_mon_list(pogodata):
     def __typing(mon, type1ref, type2ref):
@@ -106,7 +108,7 @@ def _make_mon_list(pogodata):
         mon.costume = costumes(0)
         mon.temp_evolution = megas(0)
         mon.id = mon_ids.get(mon.base_template, 0)
-        mon._gen_asset()
+        mon.gen_asset()
 
         locale_key = "pokemon_name_" + str(mon.id).zfill(4)
         mon.name = pogodata.get_locale(locale_key)
@@ -132,7 +134,7 @@ def _make_mon_list(pogodata):
 
             evo.raw = temp_evo
             evo.name = pogodata.get_locale(locale_key + "_" + str(evo.temp_evolution.value).zfill(4))
-            evo._make_stats()
+            evo.make_stats()
 
             evo.types = []
             __typing(evo, "typeOverride1", "typeOverride2")
@@ -159,17 +161,7 @@ def _make_mon_list(pogodata):
             if asset_value or asset_suffix:
                 mon.asset_value = asset_value
                 mon.asset_suffix = asset_suffix
-            mon._gen_asset()
-
-            """
-            form_template = mon.template.replace(mon.base_template, "").strip("_")
-            form_name = pogodata.get_locale("form_" + form_template)
-            if form_name == "?":
-                form_name = pogodata.get_locale("filter_key_" + form_template)
-            if form_name == "?":
-                form_name = form_template.replace("_", " ").lower()
-            mon.form_name = form_name.capitalize()
-            """
+            mon.gen_asset()
 
     # Temp Evolution assets
     evo_gm = pogodata.get_gamemaster(
@@ -187,7 +179,7 @@ def _make_mon_list(pogodata):
             )
             for mon in mons:
                 mon.asset_value = temp_evo_raw["assetBundleValue"]
-                mon._gen_asset()
+                mon.gen_asset()
 
     # Making Pokemon.evolutions attributes
     def append_evolution(mon, to_append):
@@ -205,6 +197,8 @@ def _make_mon_list(pogodata):
         append_evolution(mon, evos)
         mon.evolutions = evos
 
+    # Costumes
+
     icons = get_repo_content(INGAME_ICONS, ICON_SHA)
 
     for icon in icons:
@@ -221,6 +215,6 @@ def _make_mon_list(pogodata):
             mon = pogodata.get_mon(asset=og_asset)
             copy = mon.copy()
             copy.costume = costumes(costume)
-            copy._gen_asset()
+            copy.gen_asset()
             copy.type = PokemonType.COSTUME
             pogodata.mons.append(copy)

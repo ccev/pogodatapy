@@ -1,5 +1,6 @@
 test.py
 __pogodata_save__.pickle
+.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
