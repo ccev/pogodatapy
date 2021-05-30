@@ -1,4 +1,5 @@
 from .pogodata import PogoData, load_pogodata
+from .icons import IconSet, IconSet
 from .pokemon import Pokemon
 from .weather import Weather
 from .objects import Type
