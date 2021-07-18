@@ -1,5 +1,4 @@
-import copy
-from .enums import *
+from .enums import BasicType, QuestType
 
 class GameObject:
     def __init__(self, id_, template):
@@ -92,59 +91,3 @@ class Raids:
 
     def __getitem__(self, key):
         return self.raids.get(key, [])
-
-class Pokemon(GameMasterObject):
-    def __init__(self, gamemaster_entry, form_id, template):
-        super().__init__(0, template, gamemaster_entry)
-
-        self.form = form_id
-        self.base_template = self.raw.get("pokemonId", "")
-        #self.form_name = ""
-
-        self.quick_moves = []
-        self.charge_moves = []
-        self.types = []
-        self.evolutions = []
-        self.temp_evolutions = []
-        self._make_stats()
-
-        self.costume = 0
-
-        self.asset_value = None
-        self.asset_suffix = None
-        self._gen_asset()
-
-        self.temp_evolution_id = 0
-        self.temp_evolution_template = ""
-
-        if self.template == self.base_template:
-            self.type = PokemonType.BASE
-        else:
-            self.type = PokemonType.FORM
-
-    def copy(self):
-        return copy.deepcopy(self)
-
-    @property
-    def moves(self):
-        return self.quick_moves + self.charge_moves
-
-    def _gen_asset(self):
-        self.asset = "pokemon_icon_"
-        if self.asset_suffix:
-            self.asset += str(self.asset_suffix)
-        else:
-            self.asset += str(self.id).zfill(3) + "_"
-            if self.asset_value:
-                self.asset += str(self.asset_value)
-            else:
-                self.asset += "00"
-                if self.costume:
-                    self.asset += "_" + str(self.costume).zfill(2)
-
-    def _make_stats(self):
-        stats = self.raw.get("stats")
-        if not stats:
-            self.stats = []
-            return
-        self.stats = [stats["baseAttack"], stats["baseDefense"], stats["baseStamina"]]
