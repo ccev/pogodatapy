@@ -244,6 +244,8 @@ class PogoData:
         final = {}
         proto = proto.split("{\n")[1].split("\n}")[0]
         for entry in proto.split("\n"):
+            if "}" in entry or "{" in entry:
+                continue
             k = entry.split(" =")[0]
             v = int(entry.split("= ")[1].split(";")[0])
             final[k] = v
