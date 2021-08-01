@@ -246,8 +246,8 @@ class PogoData:
         for entry in proto.split("\n"):
             if "}" in entry or "{" in entry:
                 continue
-            k = entry.split(" =")[0]
-            v = int(entry.split("= ")[1].split(";")[0])
+            k = entry.split(" =")[0].strip()
+            v = int(entry.split("= ")[1].split(";")[0].strip())
             final[k] = v
 
         self.__cached_enums[enum.lower()] = final
