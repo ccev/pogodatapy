@@ -1,37 +1,10 @@
 from __future__ import annotations
 from typing import Optional, Union, Dict, Any, List, Type
 
-import requests
-
+from .http import SyncHttp, AsyncHttp
 from .enums import Language
 from .icon import IconSet
 from .pokemon import Pokemon
-
-
-API_VERSION = "1"
-
-
-class _Http:
-    _endpoint_base: str = ""
-
-    def __init__(self, host: str):
-        if not host.startswith("http"):
-            self._endpoint_base += "http://"
-        self._endpoint_base += host + f"/v{API_VERSION}/"
-
-
-class SyncHttp(_Http):
-    _session: requests.Session
-
-    def __init__(self, host: str):
-        super().__init__(host)
-        self._session = requests.Session()
-
-    def get(self, endpoint: str, body: Optional[Dict[str, Any]] = None) -> dict:
-        if not body:
-            body = {}
-        result = self._session.get(self._endpoint_base + endpoint, json=body)
-        return result.json()
 
 
 class _PogoData:
@@ -92,11 +65,6 @@ class PogoData(_PogoData):
         Alias for PogoData.get_pokemon
         """
         return self.get_pokemon(**kwargs)
-
-
-class AsyncHttp(_Http):
-    async def get(self, endpoint: str, body: Optional[Dict[str, Any]] = None) -> dict:
-        pass
 
 
 class AioPogoData(_PogoData):

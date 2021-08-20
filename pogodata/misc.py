@@ -1,12 +1,15 @@
 from typing import Union
 
+from .http import _Http
+
 
 class BaseApiObject:
     id: Union[int, str]
     endpoint: str
+    _http: _Http
 
-    def full(self):
-        pass  # TODO
+    def __init__(self, http: _Http):
+        self._http = http
 
 
 class GameObject(BaseApiObject):

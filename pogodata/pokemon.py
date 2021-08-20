@@ -6,6 +6,7 @@ from .enums import CustomEnum, EnumMatcher
 from .icon import Icon
 from .type import BaseType
 from .misc import BaseApiObject
+from .move import BaseMove
 
 
 class Shiny(Enum):
@@ -143,11 +144,6 @@ class TempEvolution(_BaseEvolution):
         super().__init__(data)
         self.energy_initial = data["energy_initial"]
         self.energy_subsequent = data["energy_subsequent"]
-
-
-class BaseMove:
-    def __init__(self, d):
-        pass
 
 
 class Pokemon(BasePokemon):

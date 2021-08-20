@@ -1,3 +1,5 @@
+import io
+import os
 from typing import Dict, Type, TypeVar, Union
 
 from .enums import EnumMatcher
@@ -27,8 +29,13 @@ class Icon:
     def read(self):
         pass  # TODO
 
-    def save(self):
-        pass  # TODO
+    def save(self, fp: Union[str, bytes, os.PathLike, io.BufferedIOBase]):
+        data = self.read()
+        if isinstance(fp, io.BufferedIOBase):
+            written = fp.write(data)
+        else:
+            with open(fp, 'wb') as f:
+                f.write(data)
 
 
 class IconSet(EnumMatcher):
