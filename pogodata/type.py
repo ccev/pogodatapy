@@ -3,8 +3,8 @@ from typing import List, Dict, Any
 from .misc import GameObject
 
 
-class BaseMove(GameObject):
-    endpoint = "moves"
+class BaseType(GameObject):
+    endpoint = "types"
 
     def __init__(self, data: Dict[str, Any]):
         self.id = data["id"]
