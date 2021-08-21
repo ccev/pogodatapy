@@ -5,6 +5,10 @@ from .http import SyncHttp, AsyncHttp
 from .enums import Language
 from .icon import IconSet
 from .pokemon import Pokemon
+from .move import Move
+from .type import Type
+from .weather import Weather
+from .misc import BaseApiObject
 
 
 class _PogoData:
@@ -55,16 +59,22 @@ class PogoData(_PogoData):
         super().__init__(host, language, iconset)
         self._http = SyncHttp(host)
 
-    def get_pokemon(self, **kwargs) -> List[Pokemon]:
+    def __get_base(self, kwargs: dict, obj: BaseApiObject) -> List[BaseApiObject]:
         kwargs = self._parse_language_iconset(kwargs)
-        raw_mons = self._http.get(Pokemon.endpoint, body=kwargs)
-        return [Pokemon(d) for d in raw_mons]
+        raw_mons = self._http.get(obj.endpoint, body=kwargs)
+        return [obj(d) for d in raw_mons]
+
+    def get_pokemon(self, **kwargs) -> List[Pokemon]:
+        return self.__get_base(kwargs, Pokemon)
 
     def get_mons(self, **kwargs) -> List[Pokemon]:
         """
         Alias for PogoData.get_pokemon
         """
         return self.get_pokemon(**kwargs)
+
+    def get_moves(self, **kwargs) -> List[Move]:
+        return self.__get_base(kwargs, Move)
 
 
 class AioPogoData(_PogoData):
