@@ -6,11 +6,11 @@ from .type import BaseType
 
 class Pvp:
     power: int
-    energy_gain: int
+    energy_delta: int
 
     def __init__(self, data: Dict[str, Any]):
         self.power = data["power"]
-        self.energy_gain = data["energy_gain"]
+        self.energy_delta = data["energy_delta"]
 
     def __repr__(self):
         return f"<{self.__class__.__name__} Stats power={self.power} energy_gain={self.energy_gain}>"
