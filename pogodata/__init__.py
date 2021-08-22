@@ -4,3 +4,5 @@ from .icon import *
 from .misc import *
 from .pokemon import *
 from .type import *
+from .weather import *
+from .raids import *

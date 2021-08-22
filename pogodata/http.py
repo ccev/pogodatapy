@@ -8,6 +8,7 @@ API_VERSION = "1"
 
 class _Http:
     _endpoint_base: str = ""
+    _pogoinfo_base: str = "https://raw.githubusercontent.com/ccev/pogoinfo/v2/"
 
     def __init__(self, host: str):
         if not host.startswith("http"):
@@ -15,6 +16,9 @@ class _Http:
         self._endpoint_base += host + f"/v{API_VERSION}/"
 
     def get(self, endpoint: str, body: Optional[Dict[str, Any]] = None) -> dict:
+        pass
+
+    def get_info(self, endpoint: str):
         pass
 
 
@@ -29,6 +33,10 @@ class SyncHttp(_Http):
         if not body:
             body = {}
         result = self._session.get(self._endpoint_base + endpoint, json=body)
+        return result.json()
+
+    def get_info(self, endpoint: str):
+        result = self._session.get(self._pogoinfo_base + endpoint)
         return result.json()
 
 

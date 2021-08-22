@@ -9,6 +9,7 @@ from .move import Move
 from .type import Type
 from .weather import Weather
 from .misc import BaseApiObject
+from .raids import Raids
 
 
 class _PogoData:
@@ -75,6 +76,28 @@ class PogoData(_PogoData):
 
     def get_moves(self, **kwargs) -> List[Move]:
         return self.__get_base(kwargs, Move)
+
+    def get_raids(self) -> Raids:
+        raids = Raids()
+        raw_raids = self._http.get_info(Raids.endpoint)
+        for level, mons in raw_raids.items():
+            for raw_mon in mons:
+                if not raw_mon:
+                    continue
+                if "id" in raw_mon:
+                    raw_mon["pokemon"] = raw_mon.pop("id")
+                if "template" in raw_mon:
+                    raw_mon["form"] = raw_mon.pop("template")
+                if "temp_evolution_id" in raw_mon:
+                    raw_mon["temp_evolution"] = raw_mon.pop("temp_evolution_id")
+                mons = self.get_mons(**raw_mon)
+
+                if len(mons) == 0:
+                    continue
+                mon = mons[0]
+                if mon:
+                    raids.add_mon(level, mon)
+        return raids
 
 
 class AioPogoData(_PogoData):
