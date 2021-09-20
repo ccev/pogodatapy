@@ -1,3 +1,13 @@
+## This repo is no longer maintained
+
+Due to a lack of motivation and time, I've decided to archive most of my repos. At the time of writing this, it's still fully functional.
+
+- PogoData started as a Python module to handle all kind of pogo data and makes it easy to query it.
+- I eventually decided to make PogoData a more universal web API (now in https://github.com/ccev/pogodata)
+- The point was to save on RAM by not having multiple instances of PogoData running. And of course, to allow other programming languages to benefit from it
+- This repo then got turned into pogodatapy (and work continue on the pogodatapy branch), mainly acting as an API wrapper for the web API
+- The whole thing is like 95% done and is just missing some finishing touched. But I totally lost all motivation on it. Unfortunately.
+
 # PogoData
 
 PogoData is a Python module that allows developers to easily integrate up-to-date Pokémon GO data in their projects. This includes all kinds of info about Pokémon, Raids, Grunts, Moves, Types or Items. It gets that data from the [Protos](https://raw.githubusercontent.com/Furtif/POGOProtos/master/base/base.proto), [GameMaster](https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json), [APK text files](https://github.com/PokeMiners/pogo_assets/tree/master/Texts/Latest%20APK/JSON) and [my pogoinfo repo](https://github.com/ccev/pogoinfo/).
