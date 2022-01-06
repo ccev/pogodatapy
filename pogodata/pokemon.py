@@ -168,8 +168,11 @@ def _make_mon_list(pogodata):
         for evo_raw in evolutions:
             if "temporaryEvolution" in evo_raw:
                 continue
+            template = evo_raw.get("form", evo_raw.get("evolution"))
+            if not template:
+                continue
             evo = pogodata.get_mon(
-                template=evo_raw.get("form", evo_raw["evolution"])
+                template=template
             )
             to_append.append(evo)
             append_evolution(evo, to_append)
